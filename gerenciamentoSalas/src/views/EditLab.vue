@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-lab-container">
+  <div class="form-container">
     <h2>Editar Laboratório</h2>
     <form @submit.prevent="submitForm" id="editLabForm">
       <label for="editLabName">Nome do Laboratório:</label>
@@ -108,12 +108,4 @@ export default {
 </script>
 
 <style scoped>
-.edit-lab-container {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 800px; 
-  margin: 0 auto;
-}
 </style>

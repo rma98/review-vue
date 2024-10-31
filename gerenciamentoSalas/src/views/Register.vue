@@ -1,6 +1,6 @@
 <!-- Register.vue -->
 <template>
-  <div class="register-page">
+  <div class="form-container">
     <RegisterForm :onSubmit="registerUser" />
     <p v-if="message" :class="{'success-message': success, 'error-message': !success}">
       {{ message }}

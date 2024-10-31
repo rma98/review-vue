@@ -41,5 +41,10 @@ export default {
 .main-layout {
   display: flex;
   flex-direction: column;
+  min-height: 100vh; /* Define o mínimo como altura total da tela */
+}
+
+main {
+  flex-grow: 1; /* Faz com que o conteúdo principal ocupe o espaço disponível */
 }
 </style>

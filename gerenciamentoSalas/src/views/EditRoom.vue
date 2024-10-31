@@ -1,5 +1,5 @@
 <template>
-  <div class="edit-room-container">
+  <div class="form-container">
     <h2>Editar Sala</h2>
 
     <!-- Exibe uma mensagem de carregamento enquanto os dados da sala são carregados -->
@@ -104,12 +104,4 @@ export default {
 </script>
 
 <style scoped>
-.edit-room-container {
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 800px;
-  margin: 0 auto;
-}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="form-container">
     <LoginForm @show-message="showWelcomeMessage" />
     <div v-if="welcomeMessage" :class="welcomeClass" id="welcomeMessage">
       <i :class="welcomeIconClass"></i> {{ welcomeMessage }}
