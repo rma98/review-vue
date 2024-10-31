@@ -8,8 +8,9 @@
       <li id="addRoomMenu"><router-link to="/add-room" @click="$emit('closeSidebar')"><i class="fas fa-plus fa-2x"></i> Adicionar Sala</router-link></li>
       <li id="addLabMenu"><router-link to="/add-lab" @click="$emit('closeSidebar')"><i class="fas fa-plus fa-2x"></i> Adicionar Laboratório</router-link></li>
       <li><router-link to="/add-recursos" @click="$emit('closeSidebar')"><i class="fas fa-plus fa-2x"></i> Adicionar Recurso</router-link></li>
-      <li id="loginMenu"><a href="#"><i class="fas fa-user-circle fa-2x"></i> Login</a></li>
-      <li id="registerMenu"><a href="#"><i class="fas fa-user-plus fa-2x"></i> Cadastro</a></li>
+      <li id="loginMenu"><router-link to="/login" @click="$emit('closeSidebar')"><i class="fas fa-user-circle fa-2x"></i> Login</router-link></li>
+      <li id="registerMenu"><router-link to="/register" @click="$emit('closeSidebar')"><i class="fas fa-user-plus fa-2x"></i> Cadastro</router-link></li>
+      <li><router-link to="/perfil" @click="$emit('closeSidebar')"><i class="fas fa-user fa-2x"></i> Perfil</router-link></li>  
       <li id="logoutMenu"><a href="#"><i class="fas fa-sign-out-alt fa-2x"></i> Sair</a></li>
     </ul>
   </nav>

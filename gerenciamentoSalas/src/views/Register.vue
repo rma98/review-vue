@@ -1,57 +1,72 @@
+<!-- Register.vue -->
 <template>
-    <div class="form-wrapper">
-        <div class="form-container">
-            <h2>Cadastro</h2>
-            <RegisterForm @submit="handleSubmit" />
-        </div>
-    </div>
+  <div class="register-page">
+    <RegisterForm :onSubmit="registerUser" />
+    <p v-if="message" :class="{'success-message': success, 'error-message': !success}">
+      {{ message }}
+    </p>
+  </div>
 </template>
 
 <script>
-import RegisterForm from '../components/RegisterForm.vue';
+import RegisterForm from "../components/RegisterForm.vue";
+import axios from "axios";
 
 export default {
-    components: {
-        RegisterForm,
+  components: {
+    RegisterForm,
+  },
+  data() {
+    return {
+      message: "",
+      success: false,
+    };
+  },
+  methods: {
+    async registerUser(formData) {
+      try {
+        const response = await axios.post("http://localhost:8080/api/usuarios", formData);
+        if (response.status === 201) {
+          this.success = true;
+          this.message = "Usuário cadastrado com sucesso!";
+          setTimeout(() => {
+            this.$router.push({ path: '/login' }); // Redireciona para a página de login
+          }, 2000);
+        }
+      } catch (error) {
+        if (error.response && error.response.data && error.response.data.message) {
+          this.message = error.response.data.message; // Mensagem de erro detalhada
+        } else {
+          this.message = "Erro ao cadastrar o usuário. Tente novamente.";
+        }
+        this.success = false; // Marca a mensagem como erro
+        console.error(error);
+      }
     },
-    methods: {
-        handleSubmit(userData) {
-            // Aqui você pode adicionar a lógica para processar o registro
-            console.log('Dados do usuário:', userData);
-        },
-    },
+  },
 };
 </script>
 
 <style scoped>
-.form-wrapper {
-    display: flex;
-    justify-content: center; /* Centraliza horizontalmente */
-    align-items: center; /* Centraliza verticalmente */
-    height: 100vh; /* Altura total da janela */
-    background: linear-gradient(135deg, #4caf50, #388e3c); /* Fundo gradiente */
+.success-message {
+  color: green;
+  animation: slideDown 0.3s ease-in-out;
 }
 
-.form-container {
-    background-color: white;
-    color: #333;
-    border-radius: 10px;
-    padding: 40px;
-    width: 100%;
-    max-width: 400px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    animation: slideDown 0.5s ease-out;
+.error-message {
+  color: red;
+  animation: slideDown 0.3s ease-in-out;
 }
 
-/* Animação de descer */
+/* Animação para feedback visual */
 @keyframes slideDown {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 </style>

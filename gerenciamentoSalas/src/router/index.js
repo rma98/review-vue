@@ -8,6 +8,9 @@ import AddLab from '../views/AddLab.vue';
 import ViewLab from '../views/ViewLab.vue';
 import EditLab from '../views/EditLab.vue';
 import AddRecursos from '../components/AddRecursos.vue';
+import Register from '../views/Register.vue';
+import Login from '../views/Login.vue';
+import Perfil from '../views/Perfil.vue';
 
 const routes = [
     {
@@ -44,6 +47,21 @@ const routes = [
                 name: 'AddRecursos',
                 component: AddRecursos,
                 meta: { requiresAuth: true }, // Defina se o acesso é restrito
+            },
+            {
+                path: '/register',
+                name: 'Register',
+                component: Register
+            },
+            {
+                path: '/login',
+                name: 'Login',
+                component: Login
+            },
+            {
+                path: '/perfil',
+                name: 'Perfil',
+                component: Perfil
             },
         ],
     },
