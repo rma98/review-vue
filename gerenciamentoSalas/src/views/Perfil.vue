@@ -2,9 +2,9 @@
   <div class="perfil-page">
     <h2>Perfil do Usuário</h2>
     <div v-if="user">
-      <p><strong>Nome:</strong> {{ user.nome }}</p>
+      <p><strong>Nome:</strong> {{ user.name }}</p>
       <p><strong>Email:</strong> {{ user.email }}</p>
-      <p><strong>Tipo:</strong> {{ user.tipo }}</p>
+      <p><strong>Tipo:</strong> {{ user.role }}</p>
     </div>
     <div v-else>
       <p>Carregando informações do usuário...</p>
@@ -13,30 +13,16 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
-  data() {
-    return {
-      user: null, // Armazenará os dados do usuário autenticado
-    };
+  computed: {
+    // Recupera as informações do usuário a partir do Vuex
+    user() {
+      return this.$store.state.user;
+    },
   },
-  async created() {
-    try {
-      const token = localStorage.getItem("token");
-      const email = localStorage.getItem("userEmail"); // Agora você tem o email armazenado
-      if (token && email) {
-        const response = await axios.get(`/api/usuarios/perfil?email=${email}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        this.user = response.data;
-      } else {
-        this.$router.push("/login");
-      }
-    } catch (error) {
-      console.error("Erro ao carregar dados do perfil:", error);
+  created() {
+    // Redireciona para a página de login se o usuário não estiver autenticado
+    if (!this.user || !this.user.email) {
       this.$router.push("/login");
     }
   },
