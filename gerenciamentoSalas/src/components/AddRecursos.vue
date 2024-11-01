@@ -1,6 +1,6 @@
 <!-- AddRecursos.vue -->
 <template>
-  <div class="add-recurso-form">
+  <div class="form-container">
     <h3>Adicionar Recurso</h3>
     <form @submit.prevent="addRecurso">
       <label for="nome">Nome do Recurso:</label>
@@ -52,14 +52,4 @@ export default {
 </script>
 
 <style scoped>
-.add-recurso-form {
-  max-width: 400px;
-  margin: 0 auto;
-}
-.success-message {
-  color: green;
-}
-.error-message {
-  color: red;
-}
 </style>
