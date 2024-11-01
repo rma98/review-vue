@@ -27,24 +27,36 @@
             <td>{{ lab.nome }}</td>
             <td>{{ lab.descricao }}</td>
             <td>{{ lab.capacidade }}</td>
-            <td :class="{
-              'status-disponivel': lab.status === 'DISPONIVEL',
-              'status-manutencao': lab.status === 'MANUTENCAO',
-              'status-inativa': lab.status === 'INATIVA'
-            }">
+            <td
+              :class="{
+                'status-disponivel': lab.status === 'DISPONIVEL',
+                'status-manutencao': lab.status === 'MANUTENCAO',
+                'status-inativa': lab.status === 'INATIVA',
+              }"
+            >
               {{ lab.status }}
             </td>
             <td>
               <i
+                v-if="isLoggedIn && userRole === 'Coordenador'"
                 class="fas fa-edit fa-lg"
                 @click="editLab(lab.id)"
                 title="Editar"
               ></i>
               <i
+                v-if="isLoggedIn && userRole === 'Coordenador'"
                 class="fas fa-trash fa-lg"
                 @click="openModal(lab.id)"
                 title="Excluir"
               ></i>
+              <Reserva
+                v-if="
+                  isLoggedIn &&
+                  (userRole === 'Coordenador' || userRole === 'Professor') &&
+                  room.status === 'DISPONIVEL'
+                "
+                :roomId="room.id"
+              />
             </td>
           </tr>
         </tbody>
@@ -67,10 +79,13 @@
 
 <script>
 import Modal from "../components/Modal.vue";
+import Reserva from "../views/Reserva.vue";
+import { mapState } from "vuex"; // Importando mapState para computar isLoggedIn e userRole
 
 export default {
   components: {
     Modal,
+    Reserva,
   },
   data() {
     return {
@@ -79,6 +94,12 @@ export default {
       showDeleteModal: false, // Inicialize como false
       labIdToDelete: null, // Inicialize como null
     };
+  },
+  computed: {
+    ...mapState({
+      isLoggedIn: (state) => !!state.user.name, // Usuário logado se houver um nome
+      userRole: (state) => state.user.role, // Obtemos o papel do usuário
+    }),
   },
   created() {
     this.loadLabs();

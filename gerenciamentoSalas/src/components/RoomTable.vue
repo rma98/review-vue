@@ -37,17 +37,17 @@
               {{ room.status }}
             </td>
             <td>
-              <i
+              <i v-if="isLoggedIn && userRole === 'Coordenador'"
                 class="fas fa-edit fa-lg"
                 @click="editRoom(room.id)"
                 title="Editar"
               ></i>
-              <i
+              <i v-if="isLoggedIn && userRole === 'Coordenador'"
                 class="fas fa-trash delete-room-btn fa-lg"
                 @click="openRoomModal(room.id)"
                 title="Excluir"
               ></i>
-              <Reserva v-if="room.status === 'DISPONIVEL'" :roomId="room.id" />
+              <Reserva v-if="isLoggedIn && (userRole === 'Coordenador' || userRole === 'Professor') && room.status === 'DISPONIVEL'" :roomId="room.id" />
             </td>
           </tr>
         </tbody>
@@ -71,6 +71,7 @@
 <script>
 import Modal from "../components/Modal.vue";
 import Reserva from "../views/Reserva.vue";
+import { mapState } from "vuex"; // Importando mapState para computar isLoggedIn e userRole
 
 export default {
   components: {
@@ -84,6 +85,12 @@ export default {
       showDeleteModal: false, // Controle do modal de exclusão
       roomIdToDelete: null, // Armazena o ID da sala a ser excluída
     };
+  },
+  computed: {
+    ...mapState({
+      isLoggedIn: (state) => !!state.user.name, // Usuário logado se houver um nome
+      userRole: (state) => state.user.role, // Obtemos o papel do usuário
+    }),
   },
   created() {
     this.loadRooms();
