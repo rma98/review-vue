@@ -1,8 +1,11 @@
 <template>
-  <div class="form-container">
+  <div>
     <LoginForm @show-message="showWelcomeMessage" />
-    <div v-if="welcomeMessage" :class="welcomeClass" id="welcomeMessage">
-      <i :class="welcomeIconClass"></i> {{ welcomeMessage }}
+
+    <!-- Mensagem de boas-vindas com ícone e classe dinâmicos -->
+    <div v-if="welcomeMessage" :class="welcomeClass" class="message-container">
+      <i :class="welcomeIconClass"></i>
+      <span>{{ welcomeMessage }}</span>
     </div>
   </div>
 </template>
@@ -23,6 +26,7 @@ export default {
   },
   methods: {
     showWelcomeMessage(message, type) {
+      // Define a mensagem, classe e ícone com base no tipo da mensagem
       this.welcomeMessage = message;
       this.welcomeClass = `welcome-message ${type}`;
       this.welcomeIconClass = type === 'success' ? 'fas fa-check-circle' : 'fas fa-exclamation-circle';
@@ -37,6 +41,30 @@ export default {
 </script>
 
 <style scoped>
+/* Estilo da mensagem de boas-vindas */
+.welcome-message {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-top: 20px;
+  border-radius: 5px;
+  font-size: 1.2em;
+}
+
+.welcome-message.success {
+  color: #4CAF50;
+  background-color: #E8F5E9;
+}
+
+.welcome-message.error {
+  color: #F44336;
+  background-color: #FFEBEE;
+}
+
+.message-container i {
+  margin-right: 8px;
+}
+
 /* Animação de descer */
 @keyframes slideDown {
   from {

@@ -55,11 +55,12 @@ export default {
         const data = await response.json();
         const usuario = data.usuario;
 
-        // Armazenar informações no localStorage
-        localStorage.setItem('isLoggedIn', true);
-        localStorage.setItem('userName', usuario.nome);
-        localStorage.setItem('userType', usuario.tipo);
-        localStorage.setItem('userEmail', this.credentials.email); // Armazenar o email
+        // Armazenar informações no Vuex
+        this.$store.dispatch('login', {
+          name: usuario.nome,
+          role: usuario.tipo,
+          email: this.credentials.email,
+        });
 
         // Exibe a mensagem de boas-vindas
         this.$emit('show-message', `Bem-vindo ${usuario.tipo} ${usuario.nome}!`, 'success');
