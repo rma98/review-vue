@@ -81,7 +81,7 @@ h3 {
   justify-content: center;
   margin: 20px 0;
   padding: 10px 20px;
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%); /* roxo para azul */
+  background: linear-gradient(135deg, #4caf50 0%, #81c784 100%); /* verde com um tom mais claro */
   color: white;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -97,7 +97,7 @@ h3 {
 
 .icon {
   font-size: 2rem;
-  color: #4a90e2; /* azul agradável */
+  color: white; /* Mantenha o ícone em branco para contraste */
   margin-right: 10px;
 }
 

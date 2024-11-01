@@ -35,6 +35,8 @@ export default createStore({
     },
     logout({ commit }) {
       commit('clearUser');
+      // Opcional: Redirecionar para a página de login ou inicial
+      router.push('/'); // Caso queira redirecionar
     },
   },
 });

@@ -11,15 +11,24 @@
       <li id="loginMenu"><router-link to="/login" @click="$emit('closeSidebar')"><i class="fas fa-user-circle fa-2x"></i> Login</router-link></li>
       <li id="registerMenu"><router-link to="/register" @click="$emit('closeSidebar')"><i class="fas fa-user-plus fa-2x"></i> Cadastro</router-link></li>
       <li><router-link to="/perfil" @click="$emit('closeSidebar')"><i class="fas fa-user fa-2x"></i> Perfil</router-link></li>  
-      <li id="logoutMenu"><a href="#"><i class="fas fa-sign-out-alt fa-2x"></i> Sair</a></li>
+      <li id="logoutMenu">
+      <button @click="logout; $emit('closeSidebar')" class="logout-button">
+        <i class="fas fa-sign-out-alt fa-2x"></i> Sair
+      </button>
+      </li>
     </ul>
   </nav>
 </template>
 
 <script>
+import { mapActions } from "vuex"; // Importando as ações do Vuex
+
 export default {
   props: {
     sidebarVisible: Boolean, // Recebe a propriedade para controlar a visibilidade
+  },
+  methods: {
+    ...mapActions(["logout"]), // Mapeia a ação de logout do Vuex
   },
 };
 </script>
@@ -66,5 +75,12 @@ export default {
 .sidebar ul li a i {
   margin-right: 10px;
   color: white;
+}
+
+.logout-button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
 }
 </style>
