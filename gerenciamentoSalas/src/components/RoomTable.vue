@@ -37,17 +37,17 @@
               {{ room.status }}
             </td>
             <td>
-              <i v-if="isLoggedIn && userRole === 'Coordenador'"
+              <i v-if="isLoggedIn && userRole === 'COORDENADOR'"
                 class="fas fa-edit fa-lg"
                 @click="editRoom(room.id)"
                 title="Editar"
               ></i>
-              <i v-if="isLoggedIn && userRole === 'Coordenador'"
+              <i v-if="isLoggedIn && userRole === 'COORDENADOR'"
                 class="fas fa-trash delete-room-btn fa-lg"
                 @click="openRoomModal(room.id)"
                 title="Excluir"
               ></i>
-              <Reserva v-if="isLoggedIn && (userRole === 'Coordenador' || userRole === 'Professor') && room.status === 'DISPONIVEL'" :roomId="room.id" />
+              <Reserva v-if="isLoggedIn && (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') && room.status === 'DISPONIVEL'" :roomId="room.id" />
             </td>
           </tr>
         </tbody>

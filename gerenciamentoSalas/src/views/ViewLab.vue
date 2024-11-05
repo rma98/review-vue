@@ -11,6 +11,10 @@ export default {
   components: {
     LabTable,
   },
+  data() {
+    return {};
+  },
+  methods: {},
 };
 </script>
 

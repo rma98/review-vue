@@ -38,24 +38,21 @@
             </td>
             <td>
               <i
-                v-if="isLoggedIn && userRole === 'Coordenador'"
+                v-if="isLoggedIn && userRole === 'COORDENADOR'"
                 class="fas fa-edit fa-lg"
                 @click="editLab(lab.id)"
                 title="Editar"
               ></i>
               <i
-                v-if="isLoggedIn && userRole === 'Coordenador'"
+                v-if="isLoggedIn && userRole === 'COORDENADOR'"
                 class="fas fa-trash fa-lg"
                 @click="openModal(lab.id)"
                 title="Excluir"
               ></i>
-              <Reserva
-                v-if="
-                  isLoggedIn &&
-                  (userRole === 'Coordenador' || userRole === 'Professor') &&
-                  room.status === 'DISPONIVEL'
+              <Reserva v-if=" isLoggedIn && (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') &&
+                  lab.status === 'DISPONIVEL'
                 "
-                :roomId="room.id"
+                :labId="lab.id"
               />
             </td>
           </tr>

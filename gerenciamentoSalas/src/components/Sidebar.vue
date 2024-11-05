@@ -2,15 +2,52 @@
   <!-- Sidebar -->
   <nav class="sidebar" :class="{ active: sidebarVisible }" id="sidebar">
     <ul>
-      <li><router-link to="/" @click="$emit('closeSidebar')"><i class="fas fa-home fa-2x"></i> Home</router-link></li>
-      <li><router-link to="/view-room" @click="$emit('closeSidebar')"><i class="fas fa-door-open fa-2x"></i> Visualizar Salas</router-link></li>
-      <li><router-link to="/view-lab" @click="$emit('closeSidebar')"><i class="fas fa-flask fa-2x"></i> Visualizar Laboratórios</router-link></li>
-      <li v-if="isLoggedIn" id="addRoomMenu"><router-link to="/add-room" @click="$emit('closeSidebar')"><i class="fas fa-plus fa-2x"></i> Adicionar Sala</router-link></li>
-      <li v-if="isLoggedIn" id="addLabMenu"><router-link to="/add-lab" @click="$emit('closeSidebar')"><i class="fas fa-plus fa-2x"></i> Adicionar Laboratório</router-link></li>
-      <li v-if="isLoggedIn"><router-link to="/add-recursos" @click="$emit('closeSidebar')"><i class="fas fa-plus fa-2x"></i> Adicionar Recurso</router-link></li>
-      <li id="loginMenu"><router-link to="/login" @click="$emit('closeSidebar')"><i class="fas fa-user-circle fa-2x"></i> Login</router-link></li>
-      <li id="registerMenu"><router-link to="/register" @click="$emit('closeSidebar')"><i class="fas fa-user-plus fa-2x"></i> Cadastro</router-link></li>
-      <li v-if="isLoggedIn"><router-link to="/perfil" @click="$emit('closeSidebar')"><i class="fas fa-user fa-2x"></i> Perfil</router-link></li>  
+      <li>
+        <router-link to="/" @click="$emit('closeSidebar')"
+          ><i class="fas fa-home fa-2x"></i> Home</router-link
+        >
+      </li>
+      <li>
+        <router-link to="/view-room" @click="$emit('closeSidebar')"
+          ><i class="fas fa-door-open fa-2x"></i> Visualizar Salas</router-link
+        >
+      </li>
+      <li>
+        <router-link to="/view-lab" @click="$emit('closeSidebar')"
+          ><i class="fas fa-flask fa-2x"></i> Visualizar
+          Laboratórios</router-link
+        >
+      </li>
+      <li v-if="isCoordinator" id="addRoomMenu">
+        <router-link to="/add-room" @click="$emit('closeSidebar')"
+          ><i class="fas fa-plus fa-2x"></i> Adicionar Sala</router-link
+        >
+      </li>
+      <li v-if="isCoordinator" id="addLabMenu">
+        <router-link to="/add-lab" @click="$emit('closeSidebar')"
+          ><i class="fas fa-plus fa-2x"></i> Adicionar Laboratório</router-link
+        >
+      </li>
+      <li v-if="isCoordinator">
+        <router-link to="/add-recursos" @click="$emit('closeSidebar')"
+          ><i class="fas fa-plus fa-2x"></i> Adicionar Recurso</router-link
+        >
+      </li>
+      <li id="loginMenu">
+        <router-link to="/login" @click="$emit('closeSidebar')"
+          ><i class="fas fa-user-circle fa-2x"></i> Login</router-link
+        >
+      </li>
+      <li id="registerMenu">
+        <router-link to="/register" @click="$emit('closeSidebar')"
+          ><i class="fas fa-user-plus fa-2x"></i> Cadastro</router-link
+        >
+      </li>
+      <li v-if="isLoggedIn">
+        <router-link to="/perfil" @click="$emit('closeSidebar')"
+          ><i class="fas fa-user fa-2x"></i> Perfil</router-link
+        >
+      </li>
       <!-- Renderiza o botão 'Sair' apenas se o usuário estiver logado -->
       <li v-if="isLoggedIn">
         <button @click="logoutAndClose" class="logout-button">
@@ -33,6 +70,11 @@ export default {
     ...mapState({
       isLoggedIn: (state) => !!state.user.name, // Considera logado se o nome de usuário existir
     }),
+    isCoordinator() {
+      return (
+        this.$store.state.user && this.$store.state.user.role === "COORDENADOR"
+      );
+    },
   },
   methods: {
     ...mapActions(["logout"]),
