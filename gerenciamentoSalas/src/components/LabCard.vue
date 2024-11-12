@@ -1,47 +1,51 @@
 <template>
   <div class="card-carousel">
-    <div v-if="rooms.length" class="carousel-container">
+    <div v-if="labs.length" class="carousel-container">
       <div
         class="card"
-        v-for="room in rooms"
-        :key="room.id"
+        v-for="lab in labs"
+        :key="lab.id"
         :class="{
-          'status-disponivel': room.status === 'DISPONIVEL',
-          'status-manutencao': room.status === 'MANUTENCAO',
-          'status-inativa': room.status === 'INATIVA',
+          'status-disponivel': lab.status === 'DISPONIVEL',
+          'status-manutencao': lab.status === 'MANUTENCAO',
+          'status-inativa': lab.status === 'INATIVA',
         }"
       >
         <div class="card-header">
-          <h4>{{ room.nome }}</h4>
+          <h4>{{ lab.nome }}</h4>
           <span class="status-icon">
             <i
               :class="{
-                'fas fa-check-circle': room.status === 'DISPONIVEL',
-                'fas fa-cogs': room.status === 'MANUTENCAO',
-                'fas fa-times-circle': room.status === 'INATIVA',
+                'fas fa-check-circle': lab.status === 'DISPONIVEL',
+                'fas fa-cogs': lab.status === 'MANUTENCAO',
+                'fas fa-times-circle': lab.status === 'INATIVA',
               }"
-              :title="room.status"
+              :title="lab.status"
             ></i>
           </span>
         </div>
-        <p><strong>Descrição:</strong> {{ room.descricao }}</p>
-        <p><strong>Capacidade:</strong> {{ room.capacidade }}</p>
+        <p><strong>Descrição:</strong> {{ lab.descricao }}</p>
+        <p><strong>Capacidade:</strong> {{ lab.capacidade }}</p>
         <div class="actions">
           <i
             v-if="isLoggedIn && userRole === 'COORDENADOR'"
             class="fas fa-edit"
-            @click="editRoom(room.id)"
+            @click="editLab(lab.id)"
             title="Editar"
           ></i>
           <i
             v-if="isLoggedIn && userRole === 'COORDENADOR'"
-            class="fas fa-trash delete-room-btn"
-            @click="openRoomModal(room.id)"
+            class="fas fa-trash delete-lab-btn"
+            @click="openModal(lab.id)"
             title="Excluir"
           ></i>
           <Reserva
-            v-if="isLoggedIn && (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') && room.status === 'DISPONIVEL'"
-            :roomId="room.id"
+            v-if="
+              isLoggedIn &&
+              (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') &&
+              lab.status === 'DISPONIVEL'
+            "
+            :labId="lab.id"
           />
         </div>
       </div>
@@ -50,12 +54,12 @@
         v-if="showDeleteModal"
         :visible="showDeleteModal"
         :message="modalMessage"
-        @confirm="confirmDeleteRoom"
-        @close="closeRoomModal"
+        @confirm="confirmDeleteLab"
+        @close="closeLabModal"
       />
     </div>
     <div v-else>
-      <p>Nenhuma sala encontrada.</p>
+      <p>Não há laboratórios disponíveis.</p>
     </div>
   </div>
 </template>
@@ -72,12 +76,12 @@ export default {
   },
   data() {
     return {
-      rooms: [], // Lista de salas
+      labs: [],
       message: "", // Mensagens de erro
       messageType: "", // Tipo de mensagem
       showDeleteModal: false, // Controle do modal de exclusão
       modalMessage: "", // Mensagem do modal
-      roomIdToDelete: null, // Armazena o ID da sala a ser excluída
+      labIdToDelete: null, // Inicialize como null
     };
   },
   computed: {
@@ -87,16 +91,18 @@ export default {
     }),
   },
   created() {
-    this.loadRooms();
+    this.loadLabs();
   },
   methods: {
-    async loadRooms() {
+    async loadLabs() {
       try {
-        const response = await fetch("http://localhost:8080/api/salas");
+        const response = await fetch("http://localhost:8080/api/laboratorios");
+
         if (!response.ok) {
-          throw new Error("Erro ao carregar as salas");
+          throw new Error("Erro ao carregar os laboratórios");
         }
-        this.rooms = await response.json();
+
+        this.labs = await response.json();
       } catch (error) {
         this.showError(error.message);
       }
@@ -104,54 +110,53 @@ export default {
     showSuccessMessage(message) {
       this.message = message;
       this.messageType = "success";
+
       setTimeout(() => {
-        this.clearMessage();
+        this.message = "";
+        this.messageType = "";
       }, 2000);
     },
     showError(message) {
       this.message = message;
       this.messageType = "error";
+
       setTimeout(() => {
-        this.clearMessage();
+        this.message = "";
+        this.messageType = "";
       }, 2000);
     },
-    clearMessage() {
-      this.message = "";
-      this.messageType = "";
+    editLab(id) {
+      this.$router.push(`/edit-lab/${id}`);
     },
-    editRoom(id) {
-      this.$router.push(`/edit-room/${id}`);
-    },
-    openRoomModal(id) {
-      this.roomIdToDelete = id;
+    openModal(id) {
+      this.labIdToDelete = id; // Armazena o ID do laboratório a ser excluído
       this.showDeleteModal = true; // Exibe o modal ao clicar no botão de excluir
-      this.modalMessage = "Você tem certeza que deseja excluir esta sala?";
+      this.modalMessage =
+        "Você tem certeza que deseja excluir este laboratório?";
     },
-    closeRoomModal() {
+    closeLabModal() {
       this.showDeleteModal = false; // Fecha o modal
-      this.roomIdToDelete = null; // Limpa o ID da sala
+      this.labIdToDelete = null; // Limpa o ID do laboratório
     },
-    async confirmDeleteRoom() {
-      if (this.roomIdToDelete) {
+    async confirmDeleteLab() {
+      if (this.labIdToDelete) {
         try {
           const response = await fetch(
-            `http://localhost:8080/api/salas/${this.roomIdToDelete}`,
+            `http://localhost:8080/api/laboratorios/${this.labIdToDelete}`,
             {
               method: "DELETE",
             }
           );
 
           if (response.ok) {
-            this.showSuccessMessage("Sala excluída com sucesso!");
-            await this.loadRooms();
-            this.closeRoomModal();
-            console.log("Sala excluída com sucesso!");
+            this.showSuccessMessage("Laboratório excluído com sucesso!");
+            await this.loadLabs();
+            this.showDeleteModal = false;
           } else {
-            throw new Error("Erro ao excluir a sala");
+            throw new Error("Erro ao excluir o laboratório");
           }
         } catch (error) {
-          this.showError("Erro ao excluir a sala");
-          console.error(error.message);
+          this.showError(error.message);
         }
       }
     },

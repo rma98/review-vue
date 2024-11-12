@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import LabTable from "../components/LabTable.vue";
+import LabTable from "../components/LabCard.vue";
 
 export default {
   components: {
