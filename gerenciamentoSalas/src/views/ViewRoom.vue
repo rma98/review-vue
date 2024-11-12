@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import RoomTable from "../components/RoomTable.vue";
+import RoomTable from "../components/RoomCard.vue";
 
 export default {
   components: {
