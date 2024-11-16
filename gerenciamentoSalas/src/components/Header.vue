@@ -21,16 +21,19 @@ header {
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: #4caf50;
+  background-color: #388e3c;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   color: white;
 }
 header h1 {
   display: flex;
   align-items: center;
   margin: 0;
+  color: white;
 }
 header h1 i {
   margin-right: 10px;
+  color: white;
 }
 header .menu-toggle {
   cursor: pointer;

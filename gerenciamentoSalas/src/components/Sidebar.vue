@@ -94,9 +94,9 @@ export default {
   top: 0;
   height: 100%;
   background-color: #388e3c;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   transition: right 0.3s;
   z-index: 100;
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
 }
 
 .sidebar.active {

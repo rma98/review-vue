@@ -1,7 +1,10 @@
 <template>
-  <div>
-    <h2>Adicionar Sala</h2>
+  <div class="form-container">
     <form @submit.prevent="submitRoom">
+      <div class="header">
+        <i class="fas fa-plus-circle"></i>
+        <h2>Adicionar Sala</h2>
+      </div>
       <label for="roomName">Nome da Sala:</label>
       <input type="text" v-model="roomData.nome" required />
 
@@ -90,7 +93,4 @@ export default {
 </script>
 
 <style scoped>
-h2 {
-  font-size: 2rem;
-}
 </style>

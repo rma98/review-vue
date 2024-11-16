@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <main>
-<!-- Mensagem condicional: se houver um usuário logado, exibe a saudação; caso contrário, exibe a mensagem padrão -->
       <div class="welcome-message">
         <h2 v-if="isLoggedIn">
           <i class="fas fa-user-circle icon"></i>
@@ -12,37 +11,61 @@
           Bem-vindo ao Sistema de Gerenciamento de Salas e Laboratórios
         </h2>
       </div>
-      <section class="section-rooms">
-        <h3>Salas</h3>
-        <ViewRoom />
-      </section>
-      <section class="section-labs">
-        <h3>Laboratórios</h3>
-        <ViewLab />
-      </section>
+
+      <!-- Exibição dos cards de salas e laboratórios -->
+      <CardList :rooms="rooms" :labs="labs" />
     </main>
   </div>
 </template>
 
 <script>
-import ViewRoom from "../views/ViewRoom.vue";
-import ViewLab from "../views/ViewLab.vue";
-import { mapState } from "vuex"; // Caso esteja usando Vuex para estado global
+import CardList from "../components/CardList.vue";
 
 export default {
   components: {
-    ViewRoom,
-    ViewLab,
+    CardList,
+  },
+  data() {
+    return {
+      rooms: [], // Array para armazenar as salas
+      labs: [], // Array para armazenar os laboratórios
+    };
   },
   computed: {
-    // Supondo que a informação do usuário esteja armazenada no Vuex
-    ...mapState({
-      userName: (state) => state.user.name,
-      userRole: (state) => state.user.role,
-    }),
-    // Determina se o usuário está logado verificando se o nome do usuário está presente
+    // Computed properties para o Vuex (se necessário)
+    userName() {
+      return this.$store.state.user.name;
+    },
+    userRole() {
+      return this.$store.state.user.role;
+    },
     isLoggedIn() {
-      return !!this.userName; // Retorna true se userName não for vazio
+      return !!this.userName;
+    },
+  },
+  created() {
+    this.loadRoomsAndLabs(); // Carregar as salas e laboratórios ao criar o componente
+  },
+  methods: {
+    async loadRoomsAndLabs() {
+      try {
+        const roomsResponse = await fetch("http://localhost:8080/api/salas"); // URL da API para buscar as salas
+        const labsResponse = await fetch("http://localhost:8080/api/laboratorios"); // URL da API para buscar os laboratórios
+
+        if (!roomsResponse.ok || !labsResponse.ok) {
+          throw new Error("Erro ao carregar as salas ou laboratórios");
+        }
+
+        const roomsData = await roomsResponse.json();
+        const labsData = await labsResponse.json();
+
+        this.rooms = roomsData; // Preenche o array de salas com os dados recebidos
+        this.labs = labsData; // Preenche o array de laboratórios com os dados recebidos
+
+      } catch (error) {
+        console.error(error);
+        alert("Erro ao carregar as salas e laboratórios.");
+      }
     },
   },
 };
@@ -57,10 +80,10 @@ export default {
 }
 
 main {
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  /* background-color: #f9f9f9; */
+  /* border-radius: 8px; */ 
   padding: 20px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
 }
 
 h2 {
@@ -69,19 +92,15 @@ h2 {
   margin-bottom: 20px;
 }
 
-h3 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: #333;
-}
-
 .welcome-message {
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 20px 0;
   padding: 10px 20px;
-  background: linear-gradient(135deg, #4caf50 0%, #81c784 100%); /* verde com um tom mais claro */
+  /* background: linear-gradient(135deg, #4caf50 0%, #81c784 100%); verde com um tom mais claro */
+  background-color: #388e3c;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   color: white;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -101,17 +120,6 @@ h3 {
   margin-right: 10px;
 }
 
-section {
-  background-color: #ffffff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-}
-
-.section-rooms, .section-labs {
-  margin-top: 20px;
-}
-
 @media (min-width: 768px) {
   main {
     padding: 30px;
@@ -121,16 +129,8 @@ section {
     padding: 30px;
   }
 
-  .section-rooms, .section-labs {
-    margin-top: 30px;
-  }
-
   h2 {
     font-size: 28px;
-  }
-
-  h3 {
-    font-size: 22px;
   }
 }
 </style>

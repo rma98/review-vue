@@ -1,12 +1,14 @@
 <template>
   <div class="form-container">
-    <h2>Editar Sala</h2>
-
     <!-- Exibe uma mensagem de carregamento enquanto os dados da sala são carregados -->
     <div v-if="loading">Carregando...</div>
 
     <!-- Verifica se a sala foi carregada antes de renderizar o formulário -->
     <form v-else @submit.prevent="submitEditRoom">
+      <div class="header">
+        <i class="fas fa-edit"></i>
+        <h2>Editar Sala</h2>
+      </div>
       <label for="editRoomName">Nome da Sala:</label>
       <input v-model="room.nome" required /><br /><br />
 
@@ -31,7 +33,10 @@
     </form>
 
     <!-- Exibe a mensagem de sucesso ou erro com base no tipo -->
-    <div v-if="message" :class="messageType === 'success' ? 'success-message' : 'error-message'">
+    <div
+      v-if="message"
+      :class="messageType === 'success' ? 'success-message' : 'error-message'"
+    >
       {{ message }}
     </div>
   </div>

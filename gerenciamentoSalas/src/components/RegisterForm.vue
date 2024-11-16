@@ -1,8 +1,11 @@
 <!-- RegisterForm.vue -->
 <template>
   <div class="form-container">
-    <h2>Cadastro</h2>
     <form @submit.prevent="handleSubmit">
+      <div class="header">
+        <i class="fas fa-user-plus"></i>
+        <h2>Cadastro</h2>
+      </div>
       <div class="input-group">
         <label for="name"><i class="fas fa-user"></i> Nome Completo</label>
         <input

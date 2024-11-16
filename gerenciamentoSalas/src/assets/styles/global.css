@@ -16,5 +16,20 @@
 
 body {
     font-family: Arial, sans-serif;
-    background-color: #f7f7f7;
+    background: linear-gradient(135deg, #388e3c 0%, #f9f9f9 60%, #ccc 100%);
+    color: #333;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+    color: #333; 
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
 }

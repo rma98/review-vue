@@ -19,11 +19,15 @@ export default {
 footer {
   text-align: center;
   padding: 10px;
-  background-color: #4caf50;
-  color: white;
+  background-color: #388e3c;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
   position: relative;
   clear: both;
   font-size: 1.6rem;
   font-weight: bold;
+}
+
+footer p {
+  color: white;
 }
 </style>

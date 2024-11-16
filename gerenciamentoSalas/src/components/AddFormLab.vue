@@ -1,7 +1,10 @@
 <template>
-  <div>
-    <h2>Adicionar Laboratório</h2>
+  <div class="form-container">
     <form @submit.prevent="submitLab">
+      <div class="header">
+        <i class="fas fa-plus-circle"></i>
+        <h2>Adicionar Laboratório</h2>
+      </div>
       <label for="labName">Nome do Laboratório:</label>
       <input type="text" v-model="labData.nome" required />
 
@@ -16,7 +19,7 @@
         <option value="DISPONIVEL">Disponível</option>
         <option value="MANUTENCAO">Manutenção</option>
         <option value="INATIVA">Inativa</option>
-        </select>
+      </select>
 
       <button type="submit">Adicionar Laboratório</button>
     </form>

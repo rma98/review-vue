@@ -1,7 +1,10 @@
 <template>
   <div class="form-container">
-    <h2>Editar Laboratório</h2>
     <form @submit.prevent="submitForm" id="editLabForm">
+      <div class="header">
+        <i class="fas fa-edit"></i>
+        <h2>Editar Laboratório</h2>
+      </div>
       <label for="editLabName">Nome do Laboratório:</label>
       <input type="text" id="editLabName" v-model="lab.nome" required />
 
@@ -30,7 +33,10 @@
       <button type="submit">Salvar Alterações</button>
     </form>
     <!-- Exibe a mensagem de sucesso ou erro com base no tipo -->
-    <div v-if="message" :class="messageType === 'success' ? 'success-message' : 'error-message'">
+    <div
+      v-if="message"
+      :class="messageType === 'success' ? 'success-message' : 'error-message'"
+    >
       {{ message }}
     </div>
   </div>
