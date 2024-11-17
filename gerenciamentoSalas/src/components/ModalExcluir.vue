@@ -27,10 +27,14 @@ export default {
       type: Boolean,
       required: true,
     },
+    itemName: {
+      type: String,
+      default: "", // Nome do item (pode ser uma sala, item, etc)
+    },
   },
   methods: {
     confirm() {
-      this.$emit("confirm"); // Dispara o evento de confirmação
+      this.$emit("confirm", this.itemName); // Dispara o evento de confirmação passando o nome do item
       this.close();
     },
     close() {

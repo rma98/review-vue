@@ -1,4 +1,3 @@
-<!-- ViewRoom.vue -->
 <template>
   <div class="card-carousel">
     <div v-if="rooms.length" class="carousel-container">
@@ -8,21 +7,33 @@
         :item="room"
         :type="'sala'"
         @openModal="openRoomModal"
+        @itemDeleted="handleItemDeleted"
       />
     </div>
     <div v-else>
       <p>Nenhuma sala encontrada.</p>
     </div>
+
+    <!-- Modal de Exclusão -->
+    <ModalExcluir
+      v-if="showDeleteModal"
+      :visible="showDeleteModal"
+      :itemName="modalMessage"
+      @close="showDeleteModal = false"
+      @confirm="deleteRoom"
+    />
   </div>
 </template>
 
 <script>
 import ItemCard from "../components/ItemCard.vue";
+import ModalExcluir from "../components/ModalExcluir.vue";
 import { mapState } from "vuex";
 
 export default {
   components: {
     ItemCard,
+    ModalExcluir,
   },
   data() {
     return {
@@ -66,6 +77,12 @@ export default {
       this.roomIdToDelete = id;
       this.showDeleteModal = true;
       this.modalMessage = "Você tem certeza que deseja excluir esta sala?";
+    },
+
+    // Função para lidar com a exclusão do item
+    handleItemDeleted(id) {
+      console.log(`Sala com ID ${id} foi excluída.`);
+      this.rooms = this.rooms.filter(room => room.id !== id); // Remove a sala excluída da lista
     },
   },
 };
