@@ -1,102 +1,96 @@
 <template>
-  <section class="section-cards">
-    <!-- Itera sobre as salas -->
-    <div v-for="(room, index) in rooms" :key="'room-' + index" class="card" 
-         :class="{
-           'status-disponivel': room.status === 'DISPONIVEL',
-           'status-manutencao': room.status === 'MANUTENCAO',
-           'status-inativa': room.status === 'INATIVA',
-         }">
+  <div class="card-carousel">
+    <div
+      v-for="item in rooms.concat(labs)"
+      :key="item.id"
+      class="card"
+      :class="{
+        'status-disponivel': item.status === 'DISPONIVEL',
+        'status-manutencao': item.status === 'MANUTENCAO',
+        'status-inativa': item.status === 'INATIVA',
+      }"
+    >
       <div class="card-header">
-        <h4>{{ room.nome }}</h4>
+        <h4>{{ item.nome }}</h4>
         <span class="status-icon">
           <i
             :class="{
-              'fas fa-check-circle': room.status === 'DISPONIVEL',
-              'fas fa-cogs': room.status === 'MANUTENCAO',
-              'fas fa-times-circle': room.status === 'INATIVA',
+              'fas fa-check-circle': item.status === 'DISPONIVEL',
+              'fas fa-cogs': item.status === 'MANUTENCAO',
+              'fas fa-times-circle': item.status === 'INATIVA',
             }"
-            :title="room.status"
+            :title="item.status"
           ></i>
         </span>
       </div>
-      <p><strong>Descrição:</strong> {{ room.descricao }}</p>
-      <p><strong>Capacidade:</strong> {{ room.capacidade }}</p>
+      <p><strong>Descrição:</strong> {{ item.descricao }}</p>
+      <p><strong>Capacidade:</strong> {{ item.capacidade }}</p>
       <div class="actions">
         <i
           v-if="isLoggedIn && userRole === 'COORDENADOR'"
           class="fas fa-edit"
-          @click="editItem(room.id, 'sala')"
+          @click="editItem(item.id, item.type)"
           title="Editar"
         ></i>
         <i
           v-if="isLoggedIn && userRole === 'COORDENADOR'"
           class="fas fa-trash delete-item-btn"
-          @click="openModal(room.id)"
+          @click="openDeleteModal(item.id, item.type)"
           title="Excluir"
         ></i>
-        <Reserva
-          v-if="isLoggedIn && (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') && room.status === 'DISPONIVEL'"
-          :itemId="room.id"
-        />
-      </div>
-    </div>
+        <button
+          v-if="
+            isLoggedIn &&
+            (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') &&
+            item.status === 'DISPONIVEL'
+          "
+          @click="openReservaModal(item.id)"
+          class="btn-reservar"
+        >
+          Reservar
+        </button>
 
-    <!-- Itera sobre os laboratórios -->
-    <div v-for="(lab, index) in labs" :key="'lab-' + index" class="card"
-         :class="{
-           'status-disponivel': lab.status === 'DISPONIVEL',
-           'status-manutencao': lab.status === 'MANUTENCAO',
-           'status-inativa': lab.status === 'INATIVA',
-         }">
-      <div class="card-header">
-        <h4>{{ lab.nome }}</h4>
-        <span class="status-icon">
-          <i
-            :class="{
-              'fas fa-check-circle': lab.status === 'DISPONIVEL',
-              'fas fa-cogs': lab.status === 'MANUTENCAO',
-              'fas fa-times-circle': lab.status === 'INATIVA',
-            }"
-            :title="lab.status"
-          ></i>
-        </span>
-      </div>
-      <p><strong>Descrição:</strong> {{ lab.descricao }}</p>
-      <p><strong>Capacidade:</strong> {{ lab.capacidade }}</p>
-      <div class="actions">
-        <i
-          v-if="isLoggedIn && userRole === 'COORDENADOR'"
-          class="fas fa-edit"
-          @click="editItem(lab.id, 'laboratorio')"
-          title="Editar"
-        ></i>
-        <i
-          v-if="isLoggedIn && userRole === 'COORDENADOR'"
-          class="fas fa-trash delete-item-btn"
-          @click="openModal(lab.id)"
-          title="Excluir"
-        ></i>
-        <Reserva
-          v-if="isLoggedIn && (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') && lab.status === 'DISPONIVEL'"
-          :itemId="lab.id"
+        <!-- Modal de Reserva -->
+        <ModalReserva
+          v-if="showReservaModal && itemIdToReserve === item.id"
+          :show="showReservaModal"
+          :itemId="item.id"
+          @close="showReservaModal = false"
+        />
+
+        <!-- Modal de Exclusão -->
+        <ModalExcluir
+          :visible="showDeleteModal"
+          :itemName="itemToDelete ? itemToDelete.nome : ''"
+          @close="showDeleteModal = false"
+          @confirm="deleteItem"
         />
       </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
-import Reserva from "../views/Reserva.vue";
+import ModalExcluir from "./ModalExcluir.vue";
+import ModalReserva from "./ModalReserva.vue";
 import { mapState } from "vuex";
 
 export default {
   components: {
-    Reserva,
+    ModalExcluir,
+    ModalReserva,
   },
   props: {
     rooms: Array,
     labs: Array,
+  },
+  data() {
+    return {
+      showDeleteModal: false, // Controle do modal de exclusão
+      showReservaModal: false, // Controle do modal de reserva
+      itemIdToDelete: null, // Armazena o id do item a ser excluído
+      itemIdToReserve: null, // Armazena o id do item a ser reservado
+    };
   },
   computed: {
     ...mapState({
@@ -106,43 +100,86 @@ export default {
   },
   methods: {
     editItem(id, type) {
-      this.$router.push(`/${type === 'sala' ? 'edit-room' : 'edit-lab'}/${id}`);
+      console.log("Editando item com ID:", id, "Tipo:", type); // Verifique o valor do tipo
+      if (type === "sala") {
+        this.$router.push(`/edit-room/${id}`);
+      } else if (type === "laboratorio") {
+        this.$router.push(`/edit-lab/${id}`);
+      } else {
+        console.error("Tipo desconhecido:", type);
+      }
     },
-    openModal(id) {
-      this.$emit("openModal", id); // Emite o evento para o componente pai
+    // Abrir o modal de exclusão
+    openDeleteModal(id, type) {
+      this.itemIdToDelete = id;
+      this.modalMessage =
+        type === "sala"
+          ? "Você tem certeza que deseja excluir esta sala?"
+          : "Você tem certeza que deseja excluir este laboratório?";
+      this.showDeleteModal = true;
+    },
+
+    // Função para excluir o item
+    async deleteItem() {
+      try {
+        const url = this.itemIdToDelete
+          ? `http://localhost:8080/api/${
+              this.modalMessage.includes("sala") ? "salas" : "laboratorios"
+            }/${this.itemIdToDelete}`
+          : "";
+        const response = await fetch(url, { method: "DELETE" });
+        if (!response.ok) throw new Error("Erro ao excluir o item");
+
+        // Emite evento de item deletado
+        this.$emit("itemDeleted", this.itemIdToDelete);
+        this.showDeleteModal = false; // Fecha o modal
+      } catch (error) {
+        console.error(error);
+      }
+    },
+
+    // Abrir o modal de reserva
+    openReservaModal(id) {
+      this.itemIdToReserve = id; // Armazena o ID do item a ser reservado
+      this.showReservaModal = true; // Exibe o modal de reserva
+    },
+
+    // Função para realizar a reserva
+    async reserveItem() {
+      try {
+        // Aqui você pode implementar a lógica de reserva, por enquanto estamos apenas exibindo um log
+        console.log(
+          `Reserva realizada para o item com ID: ${this.itemIdToReserve}`
+        );
+
+        // Exemplo de chamada para API para realizar a reserva (ajustar conforme necessário)
+        const url = `http://localhost:8080/api/reservas`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            itemId: this.itemIdToReserve,
+            userId: this.$store.state.user.id,
+          }),
+        });
+
+        if (!response.ok) throw new Error("Erro ao reservar o item");
+
+        // Fechar o modal de reserva após a confirmação
+        this.showReservaModal = false;
+        this.$emit("itemReserved", this.itemIdToReserve); // Emite evento para atualizar a lista de itens
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
 };
 </script>
 
 <style scoped>
-.section-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
-  margin-top: 30px;
-}
-
 .card {
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  transition: transform 0.3s ease;
-}
-
-.card:hover {
-  transform: scale(1.05);
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.status-icon {
-  font-size: 1.5rem;
-  color: var(--primary-color);
+  min-height: 220px;
 }
 </style>
