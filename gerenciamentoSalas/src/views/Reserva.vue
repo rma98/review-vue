@@ -1,9 +1,9 @@
-<!-- Reserva.vue -->
 <template>
   <div>
     <ReservaForm
       v-if="showForm"
-      :roomId="roomId"
+      :itemId="itemId"
+      :itemType="itemType"
       @submit-reserva="handleReserva"
     />
     <button v-else @click="toggleForm" class="reserve-button">
@@ -22,9 +22,13 @@ export default {
     ReservaForm,
   },
   props: {
-    roomId: {
+    itemId: {
       type: Number,
       required: true,
+    },
+    itemType: {
+      type: String,
+      required: true, // "sala" ou "laboratorio"
     },
   },
   data() {
@@ -40,7 +44,12 @@ export default {
     },
     async handleReserva(reservaData) {
       try {
-        const response = await axios.post("/api/reservas", {
+        // Definir o endpoint dependendo do tipo do item (sala ou laboratório)
+        const endpoint = this.itemType === "laboratorio" 
+          ? `/api/laboratorios/${this.itemId}/reservas` 
+          : `/api/salas/${this.itemId}/reservas`;
+
+        const response = await axios.post(endpoint, {
           ...reservaData,
           usuarioId: this.$store.state.usuario.id, // ID do usuário logado
         });
@@ -48,7 +57,7 @@ export default {
         this.messageType = "success";
         this.showForm = false;
       } catch (error) {
-        this.message = error.response?.data || "Erro ao reservar a sala.";
+        this.message = error.response?.data || "Erro ao reservar o item.";
         this.messageType = "error";
       }
     },

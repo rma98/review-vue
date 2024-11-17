@@ -26,18 +26,21 @@
       <p><strong>Descrição:</strong> {{ item.descricao }}</p>
       <p><strong>Capacidade:</strong> {{ item.capacidade }}</p>
       <div class="actions">
+        <!-- Exibe os ícones de edição e exclusão para o Coordenador -->
         <i
           v-if="isLoggedIn && userRole === 'COORDENADOR'"
           class="fas fa-edit"
-          @click="editItem(item.id, item.type)"
+          @click="editItem(item)"
           title="Editar"
         ></i>
         <i
           v-if="isLoggedIn && userRole === 'COORDENADOR'"
           class="fas fa-trash delete-item-btn"
-          @click="openDeleteModal(item.id, item.type)"
+          @click="openDeleteModal(item)"
           title="Excluir"
         ></i>
+
+        <!-- Exibe o botão de reserva para Coordenadores e Professores -->
         <button
           v-if="
             isLoggedIn &&
@@ -55,6 +58,7 @@
           v-if="showReservaModal && itemIdToReserve === item.id"
           :show="showReservaModal"
           :itemId="item.id"
+          :itemType="item.reservas ? 'laboratorio' : 'sala'"
           @close="showReservaModal = false"
         />
 
@@ -86,10 +90,11 @@ export default {
   },
   data() {
     return {
-      showDeleteModal: false, // Controle do modal de exclusão
-      showReservaModal: false, // Controle do modal de reserva
-      itemIdToDelete: null, // Armazena o id do item a ser excluído
-      itemIdToReserve: null, // Armazena o id do item a ser reservado
+      showDeleteModal: false,
+      showReservaModal: false,
+      itemIdToDelete: null,
+      itemIdToReserve: null,
+      itemToDelete: null,
     };
   },
   computed: {
@@ -99,80 +104,71 @@ export default {
     }),
   },
   methods: {
-    editItem(id, type) {
-      console.log("Editando item com ID:", id, "Tipo:", type); // Verifique o valor do tipo
-      if (type === "sala") {
-        this.$router.push(`/edit-room/${id}`);
-      } else if (type === "laboratorio") {
-        this.$router.push(`/edit-lab/${id}`);
-      } else {
-        console.error("Tipo desconhecido:", type);
-      }
-    },
-    // Abrir o modal de exclusão
-    openDeleteModal(id, type) {
-      this.itemIdToDelete = id;
-      this.modalMessage =
-        type === "sala"
-          ? "Você tem certeza que deseja excluir esta sala?"
-          : "Você tem certeza que deseja excluir este laboratório?";
-      this.showDeleteModal = true;
-    },
+    methods: {
+      editItem(item) {
+        console.log("Editando item com ID:", item.id);
 
-    // Função para excluir o item
-    async deleteItem() {
-      try {
-        const url = this.itemIdToDelete
-          ? `http://localhost:8080/api/${
-              this.modalMessage.includes("sala") ? "salas" : "laboratorios"
-            }/${this.itemIdToDelete}`
-          : "";
-        const response = await fetch(url, { method: "DELETE" });
-        if (!response.ok) throw new Error("Erro ao excluir o item");
+        // Usar a propriedade 'tipo' para identificar se é laboratório ou sala
+        const route =
+          item.tipo === "laboratorio" 
+            ? `/edit-lab/${item.id}` // Se o tipo for 'laboratorio'
+            : `/edit-room/${item.id}`; // Caso contrário, é uma sala
 
-        // Emite evento de item deletado
-        this.$emit("itemDeleted", this.itemIdToDelete);
-        this.showDeleteModal = false; // Fecha o modal
-      } catch (error) {
-        console.error(error);
-      }
-    },
+        this.$router.push(route);
+      },
 
-    // Abrir o modal de reserva
-    openReservaModal(id) {
-      this.itemIdToReserve = id; // Armazena o ID do item a ser reservado
-      this.showReservaModal = true; // Exibe o modal de reserva
-    },
+      openDeleteModal(item) {
+        this.itemIdToDelete = item.id;
+        this.itemToDelete = item;
+        this.showDeleteModal = true;
+      },
 
-    // Função para realizar a reserva
-    async reserveItem() {
-      try {
-        // Aqui você pode implementar a lógica de reserva, por enquanto estamos apenas exibindo um log
-        console.log(
-          `Reserva realizada para o item com ID: ${this.itemIdToReserve}`
-        );
+      async deleteItem() {
+        try {
+          // Verificar se o item é laboratório ou sala com base na propriedade 'tipo'
+          const url =
+            this.itemToDelete.tipo === "laboratorio"
+              ? `http://localhost:8080/api/laboratorios/${this.itemIdToDelete}`
+              : `http://localhost:8080/api/salas/${this.itemIdToDelete}`;
+          const response = await fetch(url, { method: "DELETE" });
+          if (!response.ok) throw new Error("Erro ao excluir o item");
 
-        // Exemplo de chamada para API para realizar a reserva (ajustar conforme necessário)
-        const url = `http://localhost:8080/api/reservas`;
-        const response = await fetch(url, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            itemId: this.itemIdToReserve,
-            userId: this.$store.state.user.id,
-          }),
-        });
+          this.$emit("itemDeleted", this.itemIdToDelete);
+          this.showDeleteModal = false;
+        } catch (error) {
+          console.error(error);
+        }
+      },
 
-        if (!response.ok) throw new Error("Erro ao reservar o item");
+      openReservaModal(id) {
+        this.itemIdToReserve = id;
+        this.showReservaModal = true;
+      },
 
-        // Fechar o modal de reserva após a confirmação
-        this.showReservaModal = false;
-        this.$emit("itemReserved", this.itemIdToReserve); // Emite evento para atualizar a lista de itens
-      } catch (error) {
-        console.error(error);
-      }
+      // Refatorando a lógica para garantir a correção do tipo de item
+      isLaboratorio(item) {
+        // Garantir que o item seja um laboratório
+        return item.tipo === "laboratorio";
+      },
+
+      isSala(item) {
+        // Garantir que o item seja uma sala
+        return item.tipo === "sala";
+      },
+
+      // Método para editar ou excluir, baseado em tipo
+      handleEditOrDelete(item) {
+        // Usando a função para identificar corretamente se é uma sala ou laboratório
+        if (this.isLaboratorio(item)) {
+          console.log("Editando ou deletando laboratório");
+          this.editItem(item);
+        } else if (this.isSala(item)) {
+          console.log("Editando ou deletando sala");
+          this.editItem(item);
+        } else {
+          console.error("Tipo de item inválido");
+        }
+      },
     },
   },
 };
