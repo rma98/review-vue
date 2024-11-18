@@ -22,6 +22,8 @@
     </div>
     <p><strong>Descrição:</strong> {{ item.descricao }}</p>
     <p><strong>Capacidade:</strong> {{ item.capacidade }}</p>
+
+    <!-- Modais para ações -->
     <div class="actions">
       <i
         v-if="isLoggedIn && userRole === 'COORDENADOR'"
@@ -69,7 +71,7 @@
 <script>
 import ModalReserva from "./ModalReserva.vue";
 import ModalExcluir from "./ModalExcluir.vue";
-import { mapState } from "vuex";
+import { mapState, mapActions } from "vuex";
 
 export default {
   components: {
@@ -84,8 +86,7 @@ export default {
     };
   },
   props: {
-    item: Object, // Para receber a sala ou laboratório
-    type: String, // Define se é "sala" ou "laboratorio"
+    item: Object, // Para receber o recurso genérico (sala, laboratório, etc.)
   },
   computed: {
     ...mapState({
@@ -94,10 +95,16 @@ export default {
     }),
   },
   methods: {
+    ...mapActions({
+      removeResource: "removeResource", // Ação para remover um recurso da lista no Vuex
+    }),
+
     editItem(id) {
-      this.$router.push(
-        `/${this.type === "sala" ? "edit-room" : "edit-lab"}/${id}`
-      );
+      // Determina o tipo de recurso (sala, laboratório, etc.)
+      const resourceType = this.item.tipoRecurso || "geral"; // Se o tipo não for especificado, usa 'geral'
+
+      // Redireciona para o componente EditRecurso.vue passando o ID do item
+      this.$router.push(`/editar-recurso/${resourceType}/${id}`);
     },
     openDeleteModal(id, nome) {
       this.itemToDelete = { id, nome }; // Salva o item a ser excluído
@@ -106,33 +113,38 @@ export default {
     closeDeleteModal() {
       this.showDeleteModal = false; // Fecha o modal de exclusão
     },
-    async deleteItem() {
+    async deleteItem(id) {
       try {
-        console.log("Tentando excluir item", this.item.id); // Verifique se o ID está correto
+        // Exclui o recurso via Vuex (chama a ação)
+        await this.$store.dispatch("deleteResource", id); // A ação Vuex agora lida com a requisição e exclusão
 
-        // Faça a requisição DELETE para a API
-        const response = await fetch(
-          `http://localhost:8080/api/${this.type}s/${this.item.id}`,
-          {
-            method: "DELETE",
-          }
-        );
+        // Recarrega a lista de recursos após a exclusão
+        await this.$store.dispatch("fetchResources");
 
-        if (!response.ok) {
-          throw new Error("Erro ao excluir o item");
-        }
-
-        // Se a requisição for bem-sucedida, emita o evento para o componente pai
-        console.log(`Item com ID ${this.item.id} excluído com sucesso!`);
-        this.$emit("itemDeleted", this.item.id); // Emite o evento de exclusão
+        // Sucesso ao excluir
+        this.closeDeleteModal(); // Fecha o modal de exclusão
+        this.showSuccessMessage("Recurso excluído com sucesso!");
+        console.log("Recurso excluído com sucesso!");
       } catch (error) {
-        console.error("Erro ao excluir o item:", error);
-        alert("Erro ao excluir o item"); // Exibe o erro de forma simples
+        // Em caso de erro
+        this.showError("Erro ao excluir o recurso");
+        console.error(error.message);
       }
+    },
+    showSuccessMessage(message) {
+      // Exibe uma mensagem de sucesso
+      alert(message);
+    },
+    showError(message) {
+      // Exibe uma mensagem de erro
+      alert(message);
     },
   },
 };
 </script>
 
 <style scoped>
+.card {
+  min-height: 220px;
+}
 </style>

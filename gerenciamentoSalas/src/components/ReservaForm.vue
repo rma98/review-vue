@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import Recurso from "../views/Recurso.vue";
+import Recurso from "../views/AddRecurso.vue";
 
 export default {
   components: {

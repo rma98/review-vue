@@ -7,7 +7,7 @@
           ><i class="fas fa-home fa-2x"></i> Home</router-link
         >
       </li>
-      <li>
+      <!-- <li>
         <router-link to="/view-room" @click="$emit('closeSidebar')"
           ><i class="fas fa-door-open fa-2x"></i> Visualizar Salas</router-link
         >
@@ -17,19 +17,9 @@
           ><i class="fas fa-flask fa-2x"></i> Visualizar
           Laboratórios</router-link
         >
-      </li>
-      <li v-if="isCoordinator" id="addRoomMenu">
-        <router-link to="/add-room" @click="$emit('closeSidebar')"
-          ><i class="fas fa-plus fa-2x"></i> Adicionar Sala</router-link
-        >
-      </li>
-      <li v-if="isCoordinator" id="addLabMenu">
-        <router-link to="/add-lab" @click="$emit('closeSidebar')"
-          ><i class="fas fa-plus fa-2x"></i> Adicionar Laboratório</router-link
-        >
-      </li>
+      </li> -->
       <li v-if="isCoordinator">
-        <router-link to="/add-recursos" @click="$emit('closeSidebar')"
+        <router-link to="/add-recurso" @click="$emit('closeSidebar')"
           ><i class="fas fa-plus fa-2x"></i> Adicionar Recurso</router-link
         >
       </li>

@@ -42,11 +42,7 @@
 
         <!-- Exibe o botão de reserva para Coordenadores e Professores -->
         <button
-          v-if="
-            isLoggedIn &&
-            (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') &&
-            item.status === 'DISPONIVEL'
-          "
+          v-if="isLoggedIn && (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') && item.status === 'DISPONIVEL'"
           @click="openReservaModal(item.id)"
           class="btn-reservar"
         >
@@ -58,7 +54,7 @@
           v-if="showReservaModal && itemIdToReserve === item.id"
           :show="showReservaModal"
           :itemId="item.id"
-          :itemType="item.reservas ? 'laboratorio' : 'sala'"
+          :itemType="item.tipo"
           @close="showReservaModal = false"
         />
 
@@ -104,71 +100,41 @@ export default {
     }),
   },
   methods: {
-    methods: {
-      editItem(item) {
-        console.log("Editando item com ID:", item.id);
+    editItem(item) {
+      console.log("Editando item com ID:", item.id);
+      const route = item.tipo === "laboratorio"
+        ? `/edit-lab/${item.id}`
+        : `/edit-room/${item.id}`;
 
-        // Usar a propriedade 'tipo' para identificar se é laboratório ou sala
-        const route =
-          item.tipo === "laboratorio" 
-            ? `/edit-lab/${item.id}` // Se o tipo for 'laboratorio'
-            : `/edit-room/${item.id}`; // Caso contrário, é uma sala
+      this.$router.push(route);
+    },
 
-        this.$router.push(route);
-      },
+    openDeleteModal(item) {
+      this.itemIdToDelete = item.id;
+      this.itemToDelete = item;
+      this.showDeleteModal = true;
+    },
 
-      openDeleteModal(item) {
-        this.itemIdToDelete = item.id;
-        this.itemToDelete = item;
-        this.showDeleteModal = true;
-      },
+    async deleteItem() {
+      try {
+        const url = this.itemToDelete.tipo === "laboratorio"
+          ? `http://localhost:8080/api/laboratorios/${this.itemIdToDelete}`
+          : `http://localhost:8080/api/salas/${this.itemIdToDelete}`;
 
-      async deleteItem() {
-        try {
-          // Verificar se o item é laboratório ou sala com base na propriedade 'tipo'
-          const url =
-            this.itemToDelete.tipo === "laboratorio"
-              ? `http://localhost:8080/api/laboratorios/${this.itemIdToDelete}`
-              : `http://localhost:8080/api/salas/${this.itemIdToDelete}`;
-          const response = await fetch(url, { method: "DELETE" });
-          if (!response.ok) throw new Error("Erro ao excluir o item");
+        const response = await fetch(url, { method: "DELETE" });
 
-          this.$emit("itemDeleted", this.itemIdToDelete);
-          this.showDeleteModal = false;
-        } catch (error) {
-          console.error(error);
-        }
-      },
+        if (!response.ok) throw new Error("Erro ao excluir o item");
 
-      openReservaModal(id) {
-        this.itemIdToReserve = id;
-        this.showReservaModal = true;
-      },
+        this.$emit("itemDeleted", this.itemIdToDelete);
+        this.showDeleteModal = false;
+      } catch (error) {
+        console.error(error);
+      }
+    },
 
-      // Refatorando a lógica para garantir a correção do tipo de item
-      isLaboratorio(item) {
-        // Garantir que o item seja um laboratório
-        return item.tipo === "laboratorio";
-      },
-
-      isSala(item) {
-        // Garantir que o item seja uma sala
-        return item.tipo === "sala";
-      },
-
-      // Método para editar ou excluir, baseado em tipo
-      handleEditOrDelete(item) {
-        // Usando a função para identificar corretamente se é uma sala ou laboratório
-        if (this.isLaboratorio(item)) {
-          console.log("Editando ou deletando laboratório");
-          this.editItem(item);
-        } else if (this.isSala(item)) {
-          console.log("Editando ou deletando sala");
-          this.editItem(item);
-        } else {
-          console.error("Tipo de item inválido");
-        }
-      },
+    openReservaModal(id) {
+      this.itemIdToReserve = id;
+      this.showReservaModal = true;
     },
   },
 };

@@ -9,6 +9,8 @@ import EditRoom from '../views/EditRoom.vue';
 import AddLab from '../views/AddLab.vue';
 import ViewLab from '../views/ViewLab.vue';
 import EditLab from '../views/EditLab.vue';
+import AddRecurso from '../views/AddRecurso.vue';
+import EditRecurso from '../views/EditRecurso.vue';
 import AddRecursos from '../components/AddRecursos.vue';
 import Register from '../views/Register.vue';
 import Login from '../views/Login.vue';
@@ -22,8 +24,10 @@ const routes = [
             { path: '', name: 'Home', component: Home, },
             { path: 'view-room', name: 'ViewRoom', component: ViewRoom, },
             { path: 'view-lab', name: 'ViewLab', component: ViewLab, },
+            { path: '/view-lab/:id', name: 'ViewLab', component: ViewLab, },
             { path: '/add-room', name: 'AddRoom', component: AddRoom, meta: { requiresAuth: true }, },
             { path: '/add-lab', name: 'AddLab', component: AddLab, meta: { requiresAuth: true }, },
+            { path: '/add-recurso', name: 'AddRecurso', component: AddRecurso, meta: { requiresAuth: true }, },
             { path: '/add-recursos', name: 'AddRecursos', component: AddRecursos, meta: { requiresAuth: true }, },
             { path: '/register', name: 'Register', component: Register },
             { path: '/login', name: 'Login', component: Login },
@@ -32,6 +36,7 @@ const routes = [
     },
     { path: '/edit-room/:id', name: 'EditRoom', component: EditRoom, meta: { requiresAuth: true }, },
     { path: '/edit-lab/:id', name: 'EditLab', component: EditLab, meta: { requiresAuth: true }, },
+    { path: '/editar-recurso/:tipo/:id', name: 'EditRecurso', component: EditRecurso, meta: { requiresAuth: true }, },
     { path: '/:pathMatch(.*)*', redirect: '/' }
 ];
 
