@@ -1,6 +1,6 @@
 /* Estilos comuns para lab-card e room-card */
 .card-carousel {
-  /* background-color: rgba(255, 255, 255, 0.9); */ 
+  /* background-color: rgba(255, 255, 255, 0.9); */
   /* border-radius: 10px; */
   display: flex;
   justify-content: center;
@@ -9,8 +9,8 @@
   gap: 20px;
   padding: 30px;
   margin-top: 30px;
-  width: 100%; 
-  max-width: 1200px; 
+  width: 100%;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -36,7 +36,8 @@
 
 .card:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* Sombra mais intensa ao passar o mouse */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  /* Sombra mais intensa ao passar o mouse */
 }
 
 .card-header {
@@ -48,18 +49,21 @@
 }
 
 .status-icon {
-  font-size: 1.5rem; /* Aumenta um pouco o tamanho dos ícones de status */
+  font-size: 1.5rem;
+  /* Aumenta um pouco o tamanho dos ícones de status */
 }
 
 .card p {
-  font-size: 1.4rem; /* Um ajuste no tamanho da descrição */
+  font-size: 1.4rem;
+  /* Um ajuste no tamanho da descrição */
   margin-bottom: 10px;
 }
 
 .actions {
   display: flex;
   justify-content: space-around;
-  margin-top: 15px; /* Distância maior entre as ações e o conteúdo principal */
+  margin-top: 15px;
+  /* Distância maior entre as ações e o conteúdo principal */
 }
 
 .actions i {
@@ -69,7 +73,8 @@
 }
 
 .actions i:hover {
-  color: #007bff; /* Cor mais visível ao passar o mouse */
+  color: #007bff;
+  /* Cor mais visível ao passar o mouse */
 }
 
 .status-disponivel {
@@ -85,8 +90,10 @@
 }
 
 .btn-reservar {
-  background-color: #28a745; /* Verde para indicar disponibilidade */
-  color: #fff; /* Texto branco */
+  background-color: #28a745;
+  /* Verde para indicar disponibilidade */
+  color: #fff;
+  /* Texto branco */
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
@@ -96,40 +103,48 @@
 }
 
 .btn-reservar:hover {
-  background-color: #218838; /* Tom mais escuro no hover */
+  background-color: #218838;
+  /* Tom mais escuro no hover */
 }
 
 .btn-reservar:active {
-  background-color: #1e7e34; /* Tom ainda mais escuro ao clicar */
+  background-color: #1e7e34;
+  /* Tom ainda mais escuro ao clicar */
 }
 
 .btn-reservar:disabled {
-  background-color: #6c757d; /* Cinza para estado desativado */
+  background-color: #6c757d;
+  /* Cinza para estado desativado */
   cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
   .card {
-    width: 100%;
-    max-width: 90%; /* Garante que o card use 90% da largura disponível */
+      width: 100%;
+      max-width: 90%;
+      /* Garante que o card use 90% da largura disponível */
   }
 
   .card-header {
-    font-size: 1.4rem; /* Reduz um pouco o tamanho da fonte do título em telas pequenas */
+      font-size: 1.4rem;
+      /* Reduz um pouco o tamanho da fonte do título em telas pequenas */
   }
 
   .card p {
-    font-size: 1.3rem; /* Ajuste no tamanho do texto de descrição */
+      font-size: 1.3rem;
+      /* Ajuste no tamanho do texto de descrição */
   }
 
   .actions i {
-    font-size: 1.2rem; /* Ajuste no tamanho dos ícones de ação em dispositivos móveis */
+      font-size: 1.2rem;
+      /* Ajuste no tamanho dos ícones de ação em dispositivos móveis */
   }
 }
 
 @media (max-width: 480px) {
   .card {
-    width: 100%;
-    max-width: 95%; /* Mais flexibilidade nas telas menores */
+      width: 100%;
+      max-width: 95%;
+      /* Mais flexibilidade nas telas menores */
   }
 }
