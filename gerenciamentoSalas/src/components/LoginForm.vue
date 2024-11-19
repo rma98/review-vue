@@ -24,6 +24,12 @@
         </div>
         <button :disabled="isFormInvalid" type="submit" class="btn">Entrar</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+
+        <!-- Link para página de cadastro -->
+        <p class="redirect-register">
+          Não possui uma conta?
+          <router-link to="/register" class="link">Cadastre-se.</router-link>
+        </p>
       </form>
     </div>
 
@@ -242,6 +248,21 @@ video {
 }
 
 .forgot-password a:hover {
+  text-decoration: underline;
+}
+
+.redirect-register {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.redirect-register .link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.redirect-register .link:hover {
   text-decoration: underline;
 }
 
