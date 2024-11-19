@@ -19,6 +19,9 @@
             required />
           <p v-if="errors.senha" class="error-message">{{ errors.senha }}</p>
         </div>
+        <div class="forgot-password">
+          <a href="/esqueceu-senha">Esqueceu sua senha?</a>
+        </div>
         <button :disabled="isFormInvalid" type="submit" class="btn">Entrar</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       </form>
@@ -225,6 +228,21 @@ video {
   color: red;
   font-size: 1.2rem;
   margin-top: 5px;
+}
+
+.forgot-password {
+  text-align: right;
+  margin: 5px 0 15px;
+}
+
+.forgot-password a {
+  color: #007bff;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
 }
 
 /* Responsividade */
