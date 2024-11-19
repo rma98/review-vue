@@ -1,23 +1,17 @@
 <template>
-  <div
-    class="card"
-    :class="{
-      'status-disponivel': item.status === 'DISPONIVEL',
-      'status-manutencao': item.status === 'MANUTENCAO',
-      'status-inativa': item.status === 'INATIVA',
-    }"
-  >
+  <div class="card" :class="{
+    'status-disponivel': item.status === 'DISPONIVEL',
+    'status-manutencao': item.status === 'MANUTENCAO',
+    'status-inativa': item.status === 'INATIVA',
+  }">
     <div class="card-header">
       <h4>{{ item.nome }}</h4>
       <span class="status-icon">
-        <i
-          :class="{
-            'fas fa-check-circle': item.status === 'DISPONIVEL',
-            'fas fa-cogs': item.status === 'MANUTENCAO',
-            'fas fa-times-circle': item.status === 'INATIVA',
-          }"
-          :title="item.status"
-        ></i>
+        <i :class="{
+          'fas fa-check-circle': item.status === 'DISPONIVEL',
+          'fas fa-cogs': item.status === 'MANUTENCAO',
+          'fas fa-times-circle': item.status === 'INATIVA',
+        }" :title="item.status"></i>
       </span>
     </div>
     <p><strong>Descrição:</strong> {{ item.descricao }}</p>
@@ -25,45 +19,25 @@
 
     <!-- Modais para ações -->
     <div class="actions">
-      <i
-        v-if="isLoggedIn && userRole === 'COORDENADOR'"
-        class="fas fa-edit"
-        @click="editItem(item.id)"
-        title="Editar"
-      ></i>
-      <i
-        v-if="isLoggedIn && userRole === 'COORDENADOR'"
-        class="fas fa-trash delete-item-btn"
-        @click="openDeleteModal(item.id, item.nome)"
-        title="Excluir"
-      ></i>
-      <button
-        v-if="
-          isLoggedIn &&
-          (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') &&
-          item.status === 'DISPONIVEL'
-        "
-        @click="showReservaModal = true"
-        class="btn-reservar"
-      >
+      <i v-if="isLoggedIn && userRole === 'COORDENADOR'" class="fas fa-edit" @click="editItem(item.id)"
+        title="Editar"></i>
+      <i v-if="isLoggedIn && userRole === 'COORDENADOR'" class="fas fa-trash delete-item-btn"
+        @click="openDeleteModal(item.id, item.nome)" title="Excluir"></i>
+      <button v-if="
+        isLoggedIn &&
+        (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') &&
+        item.status === 'DISPONIVEL'
+      " @click="showReservaModal = true" class="btn-reservar">
         Reservar
       </button>
 
       <!-- Modal de Reserva -->
-      <ModalReserva
-        v-if="showReservaModal"
-        :show="showReservaModal"
-        :itemId="item.id"
-        @close="showReservaModal = false"
-      />
+      <ModalReserva v-if="showReservaModal" :show="showReservaModal" :itemId="item.id"
+        @close="showReservaModal = false" />
 
       <!-- Modal de Exclusão -->
-      <ModalExcluir
-        :visible="showDeleteModal"
-        :itemName="itemToDelete.nome"
-        @close="closeDeleteModal"
-        @confirm="deleteItem(itemToDelete.id)"
-      />
+      <ModalExcluir :visible="showDeleteModal" :itemName="itemToDelete.nome" @close="closeDeleteModal"
+        @confirm="deleteItem(itemToDelete.id)" />
     </div>
   </div>
 </template>
