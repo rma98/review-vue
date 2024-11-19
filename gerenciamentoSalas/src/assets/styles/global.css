@@ -2,7 +2,8 @@
 
 /* Estilos globais */
 :root {
-    font-size: 62.5%; /* 1rem = 10px */
+    font-size: 62.5%;
+    /* 1rem = 10px */
 }
 
 * {
@@ -25,11 +26,18 @@ body {
     flex-direction: column;
 }
 
-p, h1, h2, h3, h4, h5, h6 {
-    color: #333; 
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #333;
 }
 
-html, body {
+html,
+body {
     height: 100%;
     width: 100%;
 }
