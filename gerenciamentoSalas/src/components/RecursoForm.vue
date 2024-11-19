@@ -7,13 +7,16 @@
       </div>
 
       <label for="nome">Nome:</label>
-      <input type="text" v-model="recursoData.nome" required />
+      <input type="text" v-model="recursoData.nome" required @input="validateNome" />
+      <small v-if="errors.nome" class="error-message">{{ errors.nome }}</small>
 
       <label for="descricao">Descrição:</label>
-      <textarea v-model="recursoData.descricao" required></textarea>
+      <textarea v-model="recursoData.descricao" required @input="validateDescricao"></textarea>
+      <small v-if="errors.descricao" class="error-message">{{ errors.descricao }}</small>
 
       <label for="capacidade">Capacidade:</label>
-      <input type="number" v-model="recursoData.capacidade" required />
+      <input type="number" v-model="recursoData.capacidade" required @input="validateCapacidade" />
+      <small v-if="errors.capacidade" class="error-message">{{ errors.capacidade }}</small>
 
       <label for="status">Status:</label>
       <select v-model="recursoData.status" required>
@@ -28,13 +31,10 @@
         <option value="LABORATORIO">Laboratório</option>
       </select>
 
-      <button type="submit">{{ buttonText }}</button>
+      <button type="submit" :disabled="hasErrors">{{ buttonText }}</button>
     </form>
 
-    <div
-      v-if="message"
-      :class="messageType === 'success' ? 'success-message' : 'error-message'"
-    >
+    <div v-if="message" :class="messageType === 'success' ? 'success-message' : 'error-message'">
       {{ message }}
     </div>
   </div>
@@ -60,10 +60,15 @@ export default {
         descricao: "",
         capacidade: 0,
         status: "DISPONIVEL",
-        tipoRecurso: "SALA"
+        tipoRecurso: "SALA",
+      },
+      errors: {
+        nome: "",
+        descricao: "",
+        capacidade: "",
       },
       message: "",
-      messageType: "", // Tipo de mensagem ("success" ou "error")
+      messageType: "",
     };
   },
   computed: {
@@ -77,18 +82,55 @@ export default {
         ? "Adicionar Sala"
         : "Adicionar Laboratório";
     },
+    hasErrors() {
+      return Object.values(this.errors).some((error) => error !== "");
+    },
   },
   methods: {
-    // Método para submeter o formulário
+    validateNome() {
+      const nome = this.recursoData.nome;
+      if (nome.length < 3) {
+        this.errors.nome = "O nome deve ter pelo menos 3 caracteres.";
+      } else if (nome.length > 50) {
+        this.errors.nome = "O nome deve ter no máximo 50 caracteres.";
+      } else if (!/^[a-zA-Z0-9\s]+$/.test(nome)) {
+        this.errors.nome = "O nome deve conter apenas letras, números e espaços.";
+      } else {
+        this.errors.nome = "";
+      }
+    },
+    validateDescricao() {
+      const descricao = this.recursoData.descricao;
+      if (descricao.length < 10) {
+        this.errors.descricao = "A descrição deve ter pelo menos 10 caracteres.";
+      } else if (descricao.length > 200) {
+        this.errors.descricao = "A descrição deve ter no máximo 200 caracteres.";
+      } else {
+        this.errors.descricao = "";
+      }
+    },
+    validateCapacidade() {
+      const capacidade = this.recursoData.capacidade;
+      if (capacidade < 1) {
+        this.errors.capacidade = "A capacidade deve ser pelo menos 1.";
+      } else if (capacidade > 1000) {
+        this.errors.capacidade = "A capacidade deve ser no máximo 1000.";
+      } else {
+        this.errors.capacidade = "";
+      }
+    },
     async submitRecurso() {
+      this.validateNome();
+      this.validateDescricao();
+      this.validateCapacidade();
+
+      if (this.hasErrors) {
+        this.showError("Por favor, corrija os erros antes de enviar.");
+        return;
+      }
+
       try {
-        const recursoDTO = {
-          nome: this.recursoData.nome,
-          descricao: this.recursoData.descricao,
-          capacidade: this.recursoData.capacidade,
-          status: this.recursoData.status,
-          tipoRecurso: this.recursoData.tipoRecurso,
-        };
+        const recursoDTO = { ...this.recursoData };
 
         const response = await fetch("http://localhost:8080/api/recursos", {
           method: "POST",
@@ -103,9 +145,8 @@ export default {
         this.showError(error.message);
       }
     },
-    // Método para lidar com a resposta da API
     async handleResponse(response) {
-      const responseText = await response.text(); // Lê a resposta como texto
+      const responseText = await response.text();
       console.log("Response Text:", responseText);
 
       if (response.ok) {
@@ -117,15 +158,13 @@ export default {
         }, 2000);
       } else {
         try {
-          const err = JSON.parse(responseText); // Tenta parsear a resposta como JSON
+          const err = JSON.parse(responseText);
           throw new Error(err.message || "Erro ao adicionar o recurso");
         } catch (error) {
-          // Caso não seja JSON, exibe a resposta bruta
           throw new Error("Erro inesperado: " + responseText);
         }
       }
     },
-    // Método para resetar o formulário
     resetForm() {
       this.recursoData = {
         nome: "",
@@ -135,7 +174,6 @@ export default {
         tipoRecurso: "SALA",
       };
     },
-    // Exibe mensagens de erro
     showError(message) {
       this.message = message;
       this.messageType = "error";
@@ -144,5 +182,10 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
+.error-message {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 5px;
+}
 </style>

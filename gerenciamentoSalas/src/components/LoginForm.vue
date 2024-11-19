@@ -9,13 +9,17 @@
         </div>
         <div class="input-group">
           <label for="email"><i class="fas fa-envelope"></i> Email</label>
-          <input type="email" v-model="credentials.email" placeholder="Digite seu email" required />
+          <input type="email" v-model="credentials.email" @input="validateEmail" placeholder="Digite seu email"
+            required />
+          <p v-if="errors.email" class="error-message">{{ errors.email }}</p>
         </div>
         <div class="input-group">
           <label for="password"><i class="fas fa-lock"></i> Senha</label>
-          <input type="password" v-model="credentials.senha" placeholder="Digite sua senha" required />
+          <input type="password" v-model="credentials.senha" @input="validatePassword" placeholder="Digite sua senha"
+            required />
+          <p v-if="errors.senha" class="error-message">{{ errors.senha }}</p>
         </div>
-        <button type="submit" class="btn">Entrar</button>
+        <button :disabled="isFormInvalid" type="submit" class="btn">Entrar</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
       </form>
     </div>
@@ -38,11 +42,49 @@ export default {
         email: "",
         senha: "",
       },
+      errors: {
+        email: null,
+        senha: null,
+      },
       errorMessage: "",
     };
   },
+  computed: {
+    isFormInvalid() {
+      return this.errors.email || this.errors.senha;
+    },
+  },
   methods: {
+    validateEmail() {
+      const email = this.credentials.email;
+      if (!email) {
+        this.errors.email = "O email é obrigatório.";
+      } else if (!/\S+@\S+\.\S+/.test(email)) {
+        this.errors.email = "O formato do email é inválido.";
+      } else {
+        this.errors.email = null;
+      }
+    },
+    validatePassword() {
+      const senha = this.credentials.senha;
+      if (!senha) {
+        this.errors.senha = "A senha é obrigatória.";
+      } else if (senha.length < 8) {
+        this.errors.senha = "A senha deve ter no mínimo 8 caracteres.";
+      } else if (!/[A-Za-z]/.test(senha) || !/\d/.test(senha)) {
+        this.errors.senha =
+          "A senha deve conter pelo menos uma letra, um número e um caractere especial.";
+      } else {
+        this.errors.senha = null;
+      }
+    },
     async handleSubmit() {
+      // Validar os campos novamente antes de enviar
+      this.validateEmail();
+      this.validatePassword();
+
+      if (this.isFormInvalid) return;
+
       try {
         const response = await fetch(
           "http://localhost:8080/api/usuarios/login",
@@ -56,7 +98,11 @@ export default {
         );
 
         if (!response.ok) {
-          throw new Error("Falha no login");
+          // Verifica o status de erro para mensagens específicas
+          if (response.status === 401 || response.status === 403) {
+            throw new Error("Email ou senha inválidos.");
+          }
+          throw new Error("Falha no login. Tente novamente.");
         }
 
         const data = await response.json();
@@ -81,7 +127,8 @@ export default {
           this.$router.push("/"); // Redireciona para a página inicial ou dashboard
         }, 2000);
       } catch (error) {
-        this.errorMessage = `Erro: ${error.message}`;
+        // Atualiza a mensagem de erro exibida ao usuário
+        this.errorMessage = error.message;
         this.$emit("show-message", this.errorMessage, "error");
       }
     },
@@ -125,7 +172,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: transparent; /* Para herdar o gradiente do pai */
+  background: transparent;
+  /* Para herdar o gradiente do pai */
 }
 
 video {
@@ -171,6 +219,12 @@ video {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+.error-message {
+  color: red;
+  font-size: 1.2rem;
+  margin-top: 5px;
 }
 
 /* Responsividade */
