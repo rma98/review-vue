@@ -32,6 +32,12 @@
         <p v-if="errors.tipo" class="error-message">{{ errors.tipo }}</p>
       </div>
       <button :disabled="isFormInvalid" type="submit" class="btn">Cadastrar</button>
+
+      <!-- Link para página de login -->
+      <p class="redirect-login">
+        Já possui uma conta?
+        <router-link to="/login" class="link">Acesse.</router-link>
+      </p>
     </form>
   </div>
 </template>
@@ -141,5 +147,20 @@ export default {
   color: red;
   font-size: 1.2rem;
   margin-top: 5px;
+}
+
+.redirect-login {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.redirect-login .link {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.redirect-login .link:hover {
+  text-decoration: underline;
 }
 </style>
