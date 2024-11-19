@@ -14,6 +14,7 @@ import EditRecurso from '../views/EditRecurso.vue';
 import AddRecursos from '../components/AddRecursos.vue';
 import Register from '../views/Register.vue';
 import Login from '../views/Login.vue';
+import ForgotPassword from '../views/ForgotPassword.vue';
 import Perfil from '../views/Perfil.vue';
 
 const routes = [
@@ -31,6 +32,7 @@ const routes = [
             { path: '/add-recursos', name: 'AddRecursos', component: AddRecursos, meta: { requiresAuth: true }, },
             { path: '/register', name: 'Register', component: Register },
             { path: '/login', name: 'Login', component: Login },
+            { path: '/esqueceu-senha', name: 'EsqueceuSenha', component: ForgotPassword },
             { path: '/perfil', name: 'Perfil', component: Perfil, meta: { requiresAuth: true }, },
         ],
     },
