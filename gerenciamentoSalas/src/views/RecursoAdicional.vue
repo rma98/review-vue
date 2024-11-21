@@ -1,15 +1,15 @@
 <template>
   <div class="view-container">
-    <AddRecursoForm />
+    <AddRecursoAdicionalForm />
   </div>
 </template>
 
 <script>
-import AddRecursoForm from "../components/AddRecursoForm.vue";
+import AddRecursoAdicionalForm from "../components/AddRecursoAdicionalForm.vue";
 
 export default {
   components: {
-    AddRecursoForm,
+    AddRecursoAdicionalForm,
   },
 };
 </script>

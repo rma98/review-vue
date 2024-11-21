@@ -7,16 +7,34 @@
       </div>
 
       <label for="nome">Nome:</label>
-      <input type="text" v-model="recursoData.nome" required @input="validateNome" />
+      <input
+        type="text"
+        v-model="recursoData.nome"
+        required
+        @input="validateNome"
+      />
       <small v-if="errors.nome" class="error-message">{{ errors.nome }}</small>
 
       <label for="descricao">Descrição:</label>
-      <textarea v-model="recursoData.descricao" required @input="validateDescricao"></textarea>
-      <small v-if="errors.descricao" class="error-message">{{ errors.descricao }}</small>
+      <textarea
+        v-model="recursoData.descricao"
+        required
+        @input="validateDescricao"
+      ></textarea>
+      <small v-if="errors.descricao" class="error-message">{{
+        errors.descricao
+      }}</small>
 
       <label for="capacidade">Capacidade:</label>
-      <input type="number" v-model="recursoData.capacidade" required @input="validateCapacidade" />
-      <small v-if="errors.capacidade" class="error-message">{{ errors.capacidade }}</small>
+      <input
+        type="number"
+        v-model="recursoData.capacidade"
+        required
+        @input="validateCapacidade"
+      />
+      <small v-if="errors.capacidade" class="error-message">{{
+        errors.capacidade
+      }}</small>
 
       <label for="status">Status:</label>
       <select v-model="recursoData.status" required>
@@ -34,7 +52,10 @@
       <button type="submit" :disabled="hasErrors">{{ buttonText }}</button>
     </form>
 
-    <div v-if="message" :class="messageType === 'success' ? 'success-message' : 'error-message'">
+    <div
+      v-if="message"
+      :class="messageType === 'success' ? 'success-message' : 'error-message'"
+    >
       {{ message }}
     </div>
   </div>
@@ -44,12 +65,12 @@
 const STATUS_OPTS = {
   DISPONIVEL: "Disponível",
   MANUTENCAO: "Manutenção",
-  INATIVA: "Inativa"
+  INATIVA: "Inativa",
 };
 
 const TIPO_RECURSO_OPTS = {
   SALA: "Sala",
-  LABORATORIO: "Laboratório"
+  LABORATORIO: "Laboratório",
 };
 
 export default {
@@ -93,8 +114,9 @@ export default {
         this.errors.nome = "O nome deve ter pelo menos 3 caracteres.";
       } else if (nome.length > 50) {
         this.errors.nome = "O nome deve ter no máximo 50 caracteres.";
-      } else if (!/^[a-zA-Z0-9\s]+$/.test(nome)) {
-        this.errors.nome = "O nome deve conter apenas letras, números e espaços.";
+      } else if (!/^[a-zA-Z0-9áàãâäéèêëíìîïóòôöúùûüç\s]+$/.test(nome)) {
+        this.errors.nome =
+          "O nome deve conter apenas letras, números e espaços.";
       } else {
         this.errors.nome = "";
       }
@@ -102,9 +124,11 @@ export default {
     validateDescricao() {
       const descricao = this.recursoData.descricao;
       if (descricao.length < 10) {
-        this.errors.descricao = "A descrição deve ter pelo menos 10 caracteres.";
+        this.errors.descricao =
+          "A descrição deve ter pelo menos 10 caracteres.";
       } else if (descricao.length > 200) {
-        this.errors.descricao = "A descrição deve ter no máximo 200 caracteres.";
+        this.errors.descricao =
+          "A descrição deve ter no máximo 200 caracteres.";
       } else {
         this.errors.descricao = "";
       }
