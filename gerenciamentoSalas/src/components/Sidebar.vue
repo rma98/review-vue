@@ -23,6 +23,11 @@
           ><i class="fas fa-plus fa-2x"></i> Adicionar Recurso</router-link
         >
       </li>
+      <li v-if="isCoordinator">
+        <router-link to="/add-recurso-adicional" @click="$emit('closeSidebar')"
+          ><i class="fas fa-plus fa-2x"></i> Adicionar Recurso Adicional</router-link
+        >
+      </li>
       <li id="loginMenu">
         <router-link to="/login" @click="$emit('closeSidebar')"
           ><i class="fas fa-user-circle fa-2x"></i> Login</router-link
