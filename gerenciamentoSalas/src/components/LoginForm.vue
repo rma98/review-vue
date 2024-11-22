@@ -20,7 +20,7 @@
           <p v-if="errors.senha" class="error-message">{{ errors.senha }}</p>
         </div>
         <div class="forgot-password">
-          <a href="/esqueceu-senha">Esqueceu sua senha?</a>
+          <router-link to="/esqueceu-senha">Esqueceu sua senha?</router-link>
         </div>
         <button :disabled="isFormInvalid" type="submit" class="btn">Entrar</button>
         <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
