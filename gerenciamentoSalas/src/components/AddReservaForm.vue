@@ -21,11 +21,11 @@
 </template>
 
 <script>
-import Recurso from "../views/AddRecurso.vue";
+import AddRecursoAdicional from "../views/AddRecursoAdicional.vue";
 
 export default {
   components: {
-    Recurso,
+    AddRecursoAdicional,
   },
   props: {
     roomId: {

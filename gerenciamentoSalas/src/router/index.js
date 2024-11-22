@@ -11,7 +11,7 @@ import ViewLab from '../views/ViewLab.vue';
 import EditLab from '../views/EditLab.vue';
 import AddRecurso from '../views/AddRecurso.vue';
 import EditRecurso from '../views/EditRecurso.vue';
-import RecursoAdicional from '../views/RecursoAdicional.vue';
+import AddRecursoAdicional from '../views/AddRecursoAdicional.vue';
 import Register from '../views/Register.vue';
 import Login from '../views/Login.vue';
 import ForgotPassword from '../views/ForgotPassword.vue';
@@ -29,8 +29,8 @@ const routes = [
             { path: '/add-room', name: 'AddRoom', component: AddRoom, meta: { requiresAuth: true }, },
             { path: '/add-lab', name: 'AddLab', component: AddLab, meta: { requiresAuth: true }, },
             { path: '/add-recurso', name: 'AddRecurso', component: AddRecurso, meta: { requiresAuth: true }, },
-            { path: '/add-recurso-adicional', component: RecursoAdicional },
-            { path: '/register', name: 'Register', component: Register, meta: { requiresAuth: true } },
+            { path: '/add-recurso-adicional', name: 'AddRecursoAdicional', component: AddRecursoAdicional, meta: { requiresAuth: true }, },
+            { path: '/register', name: 'Register', component: Register },
             { path: '/login', name: 'Login', component: Login },
             { path: '/esqueceu-senha', name: 'EsqueceuSenha', component: ForgotPassword },
             { path: '/perfil', name: 'Perfil', component: Perfil, meta: { requiresAuth: true }, },
