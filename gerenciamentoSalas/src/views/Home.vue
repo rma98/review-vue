@@ -25,6 +25,12 @@
         </div>
       </div>
 
+      <!-- Filtro por ID -->
+      <div class="filter">
+        <label for="id" class="filter-label">Filtrar por ID:</label>
+        <input type="number" v-model="selectedId" id="id" class="custom-input" placeholder="Digite o ID do recurso" />
+      </div>
+
       <!-- Exibição dos cards de salas e laboratórios -->
       <div class="card-carousel">
         <div v-if="filteredItems.length" class="carousel-container">
@@ -49,8 +55,8 @@ export default {
   },
   data() {
     return {
-      selectedType: "", // Tipo selecionado pelo usuário para filtrar
       selectedStatus: "", // Status selecionado pelo usuário para filtrar
+      selectedId: "", // ID selecionado pelo usuário para filtrar
     };
   },
   computed: {
@@ -63,14 +69,15 @@ export default {
     filteredItems() {
       let filtered = this.resources;
 
-      // Filtra pelo tipo
-      if (this.selectedType) {
-        filtered = filtered.filter((item) => item.tipo_recurso && item.tipo_recurso.toLowerCase() === this.selectedType.toLowerCase());
-      }
-
       // Filtra pelo status
       if (this.selectedStatus) {
         filtered = filtered.filter((item) => item.status && item.status.toLowerCase() === this.selectedStatus.toLowerCase());
+      }
+
+      // Filtra pelo ID
+      if (this.selectedId) {
+        const id = parseInt(this.selectedId, 10); // Converte para número
+        filtered = filtered.filter((item) => item.id === id);
       }
 
       return filtered;
@@ -185,6 +192,23 @@ main {
   padding: 10px;
   background-color: #fff;
 }
+
+.custom-input {
+  padding: 12px 15px;
+  font-size: 1rem;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 200px;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: #388e3c;
+  background-color: #e8f5e9;
+}
+
 
 @media (max-width: 768px) {
   .custom-select {
