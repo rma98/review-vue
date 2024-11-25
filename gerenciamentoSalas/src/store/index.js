@@ -13,6 +13,7 @@ export default createStore({
       email: localStorage.getItem('userEmail') || '',
     },
     resources: [],  // Lista de recursos
+    selectedStatus: '',  // Status selecionado para filtro
   },
   mutations: {
     // Mutações para o usuário
@@ -49,6 +50,11 @@ export default createStore({
     },
     deleteResource(state, id) {
       state.resources = state.resources.filter(resource => resource.id !== id);  // Remove o recurso da lista
+    },
+
+    // Mutações para atualizar o status selecionado
+    setSelectedStatus(state, status) {
+      state.selectedStatus = status;
     },
   },
   actions: {
@@ -91,6 +97,22 @@ export default createStore({
         console.error('Erro ao excluir recurso:', error);
         // Mensagem de erro pode ser gerada aqui também
       }
+    },
+
+    // Ação para mudar o status selecionado
+    setStatus({ commit }, status) {
+      commit('setSelectedStatus', status);
+    },
+  },
+  getters: {
+    // Getter para filtrar os recursos pelo status selecionado
+    filteredResources: (state) => {
+      if (state.selectedStatus) {
+        return state.resources.filter(
+          (resource) => resource.status === state.selectedStatus
+        );
+      }
+      return state.resources;
     },
   },
 });

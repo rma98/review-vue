@@ -12,14 +12,15 @@
         </h2>
       </div>
 
-      <!-- Filtro para tipo de recurso (Sala ou Laboratório) -->
+      <!-- Filtro para status -->
       <div class="filter">
-        <label for="tipo" class="filter-label">Filtrar por tipo:</label>
+        <label for="status" class="filter-label">Filtrar por status:</label>
         <div class="select-wrapper">
-          <select v-model="selectedType" id="tipo" class="custom-select">
+          <select v-model="selectedStatus" id="status" class="custom-select">
             <option value="">Todos</option>
-            <option value="sala">Sala</option>
-            <option value="laboratorio">Laboratório</option>
+            <option value="disponivel">Disponível</option>
+            <option value="manutencao">Manutenção</option>
+            <option value="inativa">Inativa</option>
           </select>
         </div>
       </div>
@@ -49,6 +50,7 @@ export default {
   data() {
     return {
       selectedType: "", // Tipo selecionado pelo usuário para filtrar
+      selectedStatus: "", // Status selecionado pelo usuário para filtrar
     };
   },
   computed: {
@@ -59,10 +61,19 @@ export default {
       resources: (state) => state.resources, // Acesso aos recursos do Vuex
     }),
     filteredItems() {
-      if (!this.selectedType) {
-        return this.resources;
+      let filtered = this.resources;
+
+      // Filtra pelo tipo
+      if (this.selectedType) {
+        filtered = filtered.filter((item) => item.tipo_recurso && item.tipo_recurso.toLowerCase() === this.selectedType.toLowerCase());
       }
-      return this.resources.filter((item) => item.tipo_recurso && item.tipo_recurso.toLowerCase() === this.selectedType.toLowerCase());
+
+      // Filtra pelo status
+      if (this.selectedStatus) {
+        filtered = filtered.filter((item) => item.status && item.status.toLowerCase() === this.selectedStatus.toLowerCase());
+      }
+
+      return filtered;
     },
   },
   created() {
