@@ -7,71 +7,46 @@
       </div>
 
       <label for="nome">Nome:</label>
-      <input
-        type="text"
-        v-model="recursoData.nome"
-        required
-        @input="validateNome"
-      />
+      <input type="text" v-model="recursoData.nome" required @input="validateNome" />
       <small v-if="errors.nome" class="error-message">{{ errors.nome }}</small>
 
       <label for="descricao">Descrição:</label>
-      <textarea
-        v-model="recursoData.descricao"
-        required
-        @input="validateDescricao"
-      ></textarea>
+      <textarea v-model="recursoData.descricao" required @input="validateDescricao"></textarea>
       <small v-if="errors.descricao" class="error-message">{{
         errors.descricao
       }}</small>
 
       <label for="capacidade">Capacidade:</label>
-      <input
-        type="number"
-        v-model="recursoData.capacidade"
-        required
-        @input="validateCapacidade"
-      />
+      <input type="number" v-model="recursoData.capacidade" required @input="validateCapacidade" />
       <small v-if="errors.capacidade" class="error-message">{{
         errors.capacidade
       }}</small>
 
       <label for="status">Status:</label>
       <select v-model="recursoData.status" required>
-        <option value="DISPONIVEL">Disponível</option>
-        <option value="MANUTENCAO">Manutenção</option>
-        <option value="INATIVA">Inativa</option>
+        <option v-for="(label, value) in getStatusOpts" :key="value" :value="value">
+          {{ label }}
+        </option>
       </select>
 
       <label for="tipo">Tipo de Recurso:</label>
       <select v-model="recursoData.tipoRecurso" required>
-        <option value="SALA">Sala</option>
-        <option value="LABORATORIO">Laboratório</option>
+        <option v-for="(label, value) in getTipoRecursoOpts" :key="value" :value="value">
+          {{ label }}
+        </option>
       </select>
 
       <button type="submit" :disabled="hasErrors">{{ buttonText }}</button>
     </form>
 
-    <div
-      v-if="message"
-      :class="messageType === 'success' ? 'success-message' : 'error-message'"
-    >
+    <div v-if="message" :class="messageType === 'success' ? 'success-message' : 'error-message'">
       {{ message }}
     </div>
   </div>
 </template>
 
 <script>
-const STATUS_OPTS = {
-  DISPONIVEL: "Disponível",
-  MANUTENCAO: "Manutenção",
-  INATIVA: "Inativa",
-};
-
-const TIPO_RECURSO_OPTS = {
-  SALA: "Sala",
-  LABORATORIO: "Laboratório",
-};
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -93,6 +68,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['getStatusOpts', 'getTipoRecursoOpts']),
     formTitle() {
       return this.recursoData.tipoRecurso === "SALA"
         ? "Adicionar Sala"

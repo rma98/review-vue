@@ -1,7 +1,11 @@
 import { createStore } from 'vuex';
 import router from '../router';  // Importando o roteador para redirecionamento (se necessário)
+import recurso from './modules/recurso';
 
 export default createStore({
+  modules: {
+    recurso,
+  },
   state: {
     user: {
       name: localStorage.getItem('userName') || '',
@@ -32,6 +36,10 @@ export default createStore({
       localStorage.removeItem('userEmail');
     },
 
+    setResources(state, resources) {
+      state.resources = resources;
+    },
+
     // Mutações para os recursos
     addResource(state, recurso) {
       state.resources.push(recurso);
@@ -59,30 +67,29 @@ export default createStore({
     async fetchResources({ commit }) {
       try {
         const response = await fetch('http://localhost:8080/api/recursos');
+        if (!response.ok) {
+          throw new Error('Erro ao buscar recursos');
+        }
         const data = await response.json();
-        commit('updateResources', data);  // Atualiza a lista de recursos com os dados da API
+        commit('updateResources', data);
       } catch (error) {
         console.error('Erro ao buscar recursos:', error);
+        // Aqui você pode adicionar uma ação para exibir uma mensagem de erro
       }
     },
 
     // Ação para excluir recurso
     async deleteResource({ commit }, id) {
       try {
-        // Realiza a exclusão do recurso na API
-        const response = await fetch(`http://localhost:8080/api/recursos/${id}`, {
-          method: 'DELETE',
-        });
-
+        const response = await fetch(`http://localhost:8080/api/recursos/${id}`, { method: 'DELETE' });
         if (response.ok) {
-          // Se a exclusão for bem-sucedida, atualiza o estado local da aplicação
-          commit('deleteResource', id); // Atualiza o estado da lista de recursos
+          commit('deleteResource', id);
         } else {
           throw new Error('Erro ao excluir o recurso');
         }
       } catch (error) {
-        console.error(error);
-        throw error; // Repassa o erro para o componente
+        console.error('Erro ao excluir recurso:', error);
+        // Mensagem de erro pode ser gerada aqui também
       }
     },
   },

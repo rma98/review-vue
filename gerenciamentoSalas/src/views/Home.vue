@@ -27,13 +27,8 @@
       <!-- Exibição dos cards de salas e laboratórios -->
       <div class="card-carousel">
         <div v-if="filteredItems.length" class="carousel-container">
-          <ItemCard
-            v-for="item in filteredItems"
-            :key="item.id"
-            :item="item"
-            :type="item.tipo"
-            @itemDeleted="handleItemDeleted"
-          />  
+          <ItemCard v-for="item in filteredItems" :key="item.id" :item="item" :type="item.tipo_recurso"
+            @itemDeleted="handleItemDeleted" />
         </div>
         <div v-else>
           <p>Nenhum recurso encontrado.</p>
@@ -53,7 +48,6 @@ export default {
   },
   data() {
     return {
-      items: [], // Array para armazenar todos os recursos (salas e laboratórios)
       selectedType: "", // Tipo selecionado pelo usuário para filtrar
     };
   },
@@ -62,47 +56,36 @@ export default {
       isLoggedIn: (state) => !!state.user.name,
       userRole: (state) => state.user.role,
       userName: (state) => state.user.name, // Mapeando corretamente o nome do usuário
+      resources: (state) => state.resources, // Acesso aos recursos do Vuex
     }),
     filteredItems() {
-      // Verifica se o filtro foi aplicado
       if (!this.selectedType) {
-        return this.items; // Retorna todos os itens se o filtro não estiver ativo
+        return this.resources;
       }
-
-      // Filtra os itens com base no tipo de recurso (sala ou laboratório)
-      return this.items.filter((item) => {
-        // Verificar se tipo_recurso está disponível e no formato esperado
-        console.log("Tipo de recurso do item:", item.tipo_recurso); // Verifique o valor real retornado
-        return (
-          item.tipo_recurso &&
-          item.tipo_recurso.toLowerCase() === this.selectedType.toLowerCase()
-        );
-      });
+      return this.resources.filter((item) => item.tipo_recurso && item.tipo_recurso.toLowerCase() === this.selectedType.toLowerCase());
     },
   },
   created() {
     this.loadResources(); // Carregar todos os recursos assim que o componente for criado
   },
   methods: {
-    // Função para carregar todos os recursos da API
     async loadResources() {
       try {
-        const response = await fetch("http://localhost:8080/api/recursos"); // URL da API para buscar todos os recursos (salas e laboratórios)
-
+        const response = await fetch("http://localhost:8080/api/recursos");
         if (!response.ok) {
           throw new Error("Erro ao carregar os recursos");
         }
-
         const data = await response.json();
-        this.items = data; // Armazena diretamente os dados retornados pela API
+        this.$store.commit('setResources', data); // Usando Vuex para atualizar os recursos
       } catch (error) {
         console.error(error);
       }
     },
-    // Função para lidar com a exclusão do item
     handleItemDeleted(id) {
-      console.log(`Recurso com ID ${id} foi excluído.`);
-      this.items = this.items.filter((item) => item.id !== id); // Remove o item excluído da lista
+      const confirmDeletion = confirm("Tem certeza que deseja excluir este recurso?");
+      if (confirmDeletion) {
+        this.$store.dispatch('deleteResource', id);
+      }
     },
   },
 };
@@ -192,17 +175,9 @@ main {
   background-color: #fff;
 }
 
-@media (min-width: 768px) {
-  main {
-    padding: 30px;
-  }
-
-  .container {
-    padding: 30px;
-  }
-
-  h2 {
-    font-size: 28px;
+@media (max-width: 768px) {
+  .custom-select {
+    width: 100%;
   }
 }
 </style>
