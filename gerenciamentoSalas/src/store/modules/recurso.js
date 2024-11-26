@@ -1,4 +1,3 @@
-// store/modules/recurso.js
 const state = {
     statusOpts: {
         DISPONIVEL: "Disponível",
@@ -9,24 +8,32 @@ const state = {
         SALA: "Sala",
         LABORATORIO: "Laboratório",
     },
-    selectedStatus: '',  // Estado para armazenar o status selecionado
+    selectedStatus: '', // Status selecionado
+    selectedTipoRecurso: '', // Tipo de recurso selecionado
 };
 
 const getters = {
     getStatusOpts: (state) => state.statusOpts,
     getTipoRecursoOpts: (state) => state.tipoRecursoOpts,
-    getSelectedStatus: (state) => state.selectedStatus,  // Getter para acessar o status selecionado
+    getSelectedStatus: (state) => state.selectedStatus,
+    getSelectedTipoRecurso: (state) => state.selectedTipoRecurso,
 };
 
 const mutations = {
     setSelectedStatus(state, status) {
-        state.selectedStatus = status;  // Mutação para atualizar o status selecionado
+        state.selectedStatus = status;
+    },
+    setSelectedTipoRecurso(state, tipoRecurso) {
+        state.selectedTipoRecurso = tipoRecurso;
     },
 };
 
 const actions = {
     setStatus({ commit }, status) {
-        commit('setSelectedStatus', status);  // Ação para mudar o status
+        commit('setSelectedStatus', status);
+    },
+    setTipoRecurso({ commit }, tipoRecurso) {
+        commit('setSelectedTipoRecurso', tipoRecurso);
     },
 };
 

@@ -16,11 +16,11 @@
       <div class="filter">
         <label for="status" class="filter-label">Filtrar por status:</label>
         <div class="select-wrapper">
-          <select v-model="selectedStatus" id="status" class="custom-select">
+          <select v-model="selectedStatus" id="status" class="custom-select" @change="updateStatusFilter">
             <option value="">Todos</option>
-            <option value="disponivel">Disponível</option>
-            <option value="manutencao">Manutenção</option>
-            <option value="inativa">Inativa</option>
+            <option value="DISPONIVEL">Disponível</option>
+            <option value="MANUTENCAO">Manutenção</option>
+            <option value="INATIVA">Inativa</option>
           </select>
         </div>
       </div>
@@ -71,7 +71,7 @@ export default {
 
       // Filtra pelo status
       if (this.selectedStatus) {
-        filtered = filtered.filter((item) => item.status && item.status.toLowerCase() === this.selectedStatus.toLowerCase());
+        filtered = filtered.filter((item) => item.status && item.status === this.selectedStatus);
       }
 
       // Filtra pelo ID
@@ -105,6 +105,10 @@ export default {
         this.$store.dispatch('deleteResource', id);
       }
     },
+    updateStatusFilter() {
+      // Atualiza o status selecionado no Vuex
+      this.$store.dispatch('setStatus', this.selectedStatus);
+    }
   },
 };
 </script>
@@ -208,7 +212,6 @@ main {
   border-color: #388e3c;
   background-color: #e8f5e9;
 }
-
 
 @media (max-width: 768px) {
   .custom-select {
