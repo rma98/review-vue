@@ -12,6 +12,7 @@ import EditLab from '../views/EditLab.vue';
 import AddRecurso from '../views/AddRecurso.vue';
 import EditRecurso from '../views/EditRecurso.vue';
 import AddRecursoAdicional from '../views/AddRecursoAdicional.vue';
+import ReservaList from '../views/ReservaList.vue';
 import Register from '../views/Register.vue';
 import Login from '../views/Login.vue';
 import ForgotPassword from '../views/ForgotPassword.vue';
@@ -30,6 +31,7 @@ const routes = [
             { path: '/add-lab', name: 'AddLab', component: AddLab, meta: { requiresAuth: true }, },
             { path: '/add-recurso', name: 'AddRecurso', component: AddRecurso, meta: { requiresAuth: true }, },
             { path: '/add-recurso-adicional', name: 'AddRecursoAdicional', component: AddRecursoAdicional, meta: { requiresAuth: true }, },
+            { path: '/reservas', name: 'Reservas', component: ReservaList, meta: { requiresAuth: true }, },
             { path: '/register', name: 'Register', component: Register },
             { path: '/login', name: 'Login', component: Login },
             { path: '/esqueceu-senha', name: 'EsqueceuSenha', component: ForgotPassword },

@@ -12,15 +12,11 @@
 
       <label for="descricao">Descrição:</label>
       <textarea v-model="recursoData.descricao" required @input="validateDescricao"></textarea>
-      <small v-if="errors.descricao" class="error-message">{{
-        errors.descricao
-      }}</small>
+      <small v-if="errors.descricao" class="error-message">{{ errors.descricao }}</small>
 
       <label for="capacidade">Capacidade:</label>
       <input type="number" v-model="recursoData.capacidade" required @input="validateCapacidade" />
-      <small v-if="errors.capacidade" class="error-message">{{
-        errors.capacidade
-      }}</small>
+      <small v-if="errors.capacidade" class="error-message">{{ errors.capacidade }}</small>
 
       <label for="status">Status:</label>
       <select v-model="recursoData.status" required>
@@ -35,6 +31,10 @@
           {{ label }}
         </option>
       </select>
+
+      <label for="localizacao">Localização:</label>
+      <input type="text" v-model="recursoData.localizacao" required @input="validateLocalizacao" />
+      <small v-if="errors.localizacao" class="error-message">{{ errors.localizacao }}</small>
 
       <button type="submit" :disabled="hasErrors">{{ buttonText }}</button>
     </form>
@@ -57,11 +57,13 @@ export default {
         capacidade: 0,
         status: "DISPONIVEL",
         tipoRecurso: "SALA",
+        localizacao: "",  // Novo campo para localização
       },
       errors: {
         nome: "",
         descricao: "",
         capacidade: "",
+        localizacao: "",  // Validação para o campo de localização
       },
       message: "",
       messageType: "",
@@ -119,10 +121,21 @@ export default {
         this.errors.capacidade = "";
       }
     },
+    validateLocalizacao() {
+      const localizacao = this.recursoData.localizacao;
+      if (localizacao.length < 3) {
+        this.errors.localizacao = "A localização deve ter pelo menos 3 caracteres.";
+      } else if (localizacao.length > 100) {
+        this.errors.localizacao = "A localização deve ter no máximo 100 caracteres.";
+      } else {
+        this.errors.localizacao = "";
+      }
+    },
     async submitRecurso() {
       this.validateNome();
       this.validateDescricao();
       this.validateCapacidade();
+      this.validateLocalizacao();
 
       if (this.hasErrors) {
         this.showError("Por favor, corrija os erros antes de enviar.");
@@ -172,6 +185,7 @@ export default {
         capacidade: 0,
         status: "DISPONIVEL",
         tipoRecurso: "SALA",
+        localizacao: "",  // Resetar campo de localização
       };
     },
     showError(message) {

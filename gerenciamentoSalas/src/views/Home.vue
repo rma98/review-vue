@@ -16,7 +16,7 @@
       <div class="filter">
         <label for="status" class="filter-label">Filtrar por status:</label>
         <div class="select-wrapper">
-          <select v-model="selectedStatus" id="status" class="custom-select" @change="updateStatusFilter">
+          <select v-model="selectedStatus" id="status" class="custom-select" @change="updateFilters">
             <option value="">Todos</option>
             <option value="DISPONIVEL">Disponível</option>
             <option value="MANUTENCAO">Manutenção</option>
@@ -25,10 +25,18 @@
         </div>
       </div>
 
-      <!-- Filtro por ID -->
+      <!-- Filtro para nome -->
       <div class="filter">
-        <label for="id" class="filter-label">Filtrar por ID:</label>
-        <input type="number" v-model="selectedId" id="id" class="custom-input" placeholder="Digite o ID do recurso" />
+        <label for="name" class="filter-label">Filtrar por nome:</label>
+        <input type="text" v-model="selectedName" id="name" class="custom-input"
+          placeholder="Digite o nome do recurso" />
+      </div>
+
+      <!-- Filtro para localização -->
+      <div class="filter">
+        <label for="location" class="filter-label">Filtrar por localização:</label>
+        <input type="text" v-model="selectedLocation" id="location" class="custom-input"
+          placeholder="Digite a localização" />
       </div>
 
       <!-- Exibição dos cards de salas e laboratórios -->
@@ -56,7 +64,8 @@ export default {
   data() {
     return {
       selectedStatus: "", // Status selecionado pelo usuário para filtrar
-      selectedId: "", // ID selecionado pelo usuário para filtrar
+      selectedName: "", // Nome selecionado pelo usuário para filtrar
+      selectedLocation: "", // Localização selecionada pelo usuário para filtrar
     };
   },
   computed: {
@@ -74,10 +83,14 @@ export default {
         filtered = filtered.filter((item) => item.status && item.status === this.selectedStatus);
       }
 
-      // Filtra pelo ID
-      if (this.selectedId) {
-        const id = parseInt(this.selectedId, 10); // Converte para número
-        filtered = filtered.filter((item) => item.id === id);
+      // Filtra pelo nome
+      if (this.selectedName) {
+        filtered = filtered.filter((item) => item.nome && item.nome.toLowerCase().includes(this.selectedName.toLowerCase()));
+      }
+
+      // Filtra pela localização
+      if (this.selectedLocation) {
+        filtered = filtered.filter((item) => item.localizacao && item.localizacao.toLowerCase().includes(this.selectedLocation.toLowerCase()));
       }
 
       return filtered;
@@ -105,9 +118,13 @@ export default {
         this.$store.dispatch('deleteResource', id);
       }
     },
-    updateStatusFilter() {
-      // Atualiza o status selecionado no Vuex
-      this.$store.dispatch('setStatus', this.selectedStatus);
+    updateFilters() {
+      // Atualiza os filtros no Vuex
+      this.$store.dispatch('setFilters', {
+        status: this.selectedStatus,
+        name: this.selectedName,
+        location: this.selectedLocation
+      });
     }
   },
 };

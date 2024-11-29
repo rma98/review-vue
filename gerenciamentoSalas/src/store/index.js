@@ -1,10 +1,12 @@
 import { createStore } from 'vuex';
 import router from '../router';
 import recurso from './modules/recurso';
+import recursoAdicional from './modules/recursoAdicional'; // Importa o módulo recursoAdicional
 
 export default createStore({
   modules: {
     recurso,
+    recursoAdicional, // Registra o módulo recursoAdicional
   },
   state: {
     user: {
@@ -54,14 +56,14 @@ export default createStore({
       commit('clearUser');
       router.push('/');
     },
-    async fetchResources({ commit }) {
+    async fetchRecursos({ commit }) {
       try {
         const response = await fetch('http://localhost:8080/api/recursos');
         if (!response.ok) {
           throw new Error('Erro ao buscar recursos');
         }
         const data = await response.json();
-        commit('updateResources', data);
+        commit('setResources', data);
       } catch (error) {
         console.error('Erro ao buscar recursos:', error);
       }
@@ -72,10 +74,18 @@ export default createStore({
         if (response.ok) {
           commit('deleteResource', id);
         } else {
-          throw new Error('Erro ao excluir o recurso');
+          throw new Error('Erro ao excluir recurso');
         }
       } catch (error) {
         console.error('Erro ao excluir recurso:', error);
+      }
+    },
+    // Adiciona uma ação para buscar os recursos adicionais
+    async fetchRecursosAdicionais({ commit }) {
+      try {
+        await commit("recursoAdicional/fetchRecursosAdicionais");
+      } catch (error) {
+        console.error('Erro ao buscar recursos adicionais:', error);
       }
     },
   },
@@ -89,5 +99,7 @@ export default createStore({
         return matchesStatus && matchesTipoRecurso;
       });
     },
+    // Acessando os recursos adicionais diretamente do estado
+    getRecursosAdicionais: (state) => state.recursoAdicional.recursosAdicionais,
   },
 });

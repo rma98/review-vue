@@ -16,6 +16,7 @@
     </div>
     <p><strong>Descrição:</strong> {{ item.descricao }}</p>
     <p><strong>Capacidade:</strong> {{ item.capacidade }}</p>
+    <p><strong>Localização:</strong> {{ item.localizacao }}</p> <!-- Exibindo a localização -->
 
     <!-- Modais para ações -->
     <div class="actions">

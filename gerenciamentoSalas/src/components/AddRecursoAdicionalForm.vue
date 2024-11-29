@@ -14,34 +14,28 @@
       <textarea v-model="recursoAdicionalData.descricao" required @input="validateDescricao"></textarea>
       <small v-if="errors.descricao" class="error-message">{{ errors.descricao }}</small>
 
-      <!-- Dropdown para selecionar o recurso -->
-      <label for="recurso_id">Recurso:</label>
-      <select v-model="recursoAdicionalData.recurso_id" required>
-        <option v-for="recurso in recursoAdicionalData.recursos" :key="recurso.id" :value="recurso.id">
-          {{ recurso.nome }}
-        </option>
-      </select>
-      <small v-if="!recursoAdicionalData.recurso_id" class="error-message">
-        Por favor, selecione um recurso.
-      </small>
+      <label for="quantidade">Quantidade:</label>
+      <input type="number" v-model="recursoAdicionalData.quantidade" required min="1" />
+      <small v-if="errors.quantidade" class="error-message">{{ errors.quantidade }}</small>
 
-      <button type="submit" :disabled="hasErrors">Adicionar Recurso Adicional</button>
+      <button type="submit" :disabled="hasErrors || isLoading">Adicionar Recurso Adicional</button>
     </form>
 
+    <!-- Mensagem de sucesso ou erro -->
     <div v-if="message" :class="messageType === 'success' ? 'success-message' : 'error-message'">
       {{ message }}
     </div>
 
-    <!-- Botão para visualizar os recursos adicionais -->
-    <button class="view-resources-btn" @click="toggleRecursoList">Ver Recursos Adicionais</button>
-
-    <!-- Lista de recursos adicionais -->
-    <div v-if="showResourcesList" class="resource-list">
+    <!-- Itens adicionados -->
+    <div v-if="isAdded" class="added-info">
+      <h3>Recursos Adicionados</h3>
       <ul>
-        <li v-for="recurso in recursosAdicionais" :key="recurso.id">
-          {{ recurso.nome }}
-          <button @click="editRecurso(recurso.id)">Editar</button>
-          <button @click="deleteRecurso(recurso.id)">Excluir</button>
+        <li v-for="(item, index) in addedRecursos" :key="index">
+          <p>{{ item.nome }} - {{ item.descricao }} - {{ item.quantidade }} unidades
+            <button @click="deleteRecurso(index)" class="delete-btn">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </p>
         </li>
       </ul>
     </div>
@@ -50,183 +44,89 @@
 
 <script>
 export default {
-  data() {
-    return {
-      recursoAdicionalData: {
-        nome: "",
-        descricao: "",
-        recurso_id: null,
-        recursos: [],
-        recursosAdicionais: [], // Lista de recursos adicionais carregados
-      },
-      errors: {
-        nome: "",
-        descricao: "",
-      },
-      message: "",
-      messageType: "",
-      showResourceList: false, // Controle para mostrar ou ocultar a lista de recursos adicionais
-    };
-  },
   computed: {
+    recursoAdicionalData() {
+      return this.$store.getters.getRecursoAdicionalData;
+    },
+    message() {
+      return this.$store.getters.getMessage;
+    },
+    messageType() {
+      return this.$store.getters.getMessageType;
+    },
+    addedRecursos() {
+      return this.$store.getters.getAddedRecursos;
+    },
     hasErrors() {
       return Object.values(this.errors).some((error) => error !== "");
     },
   },
-  created() {
-    this.loadRecursos();
-    this.loadRecursosAdicionais(); // Carregar os recursos adicionais ao iniciar
+  data() {
+    return {
+      errors: {
+        nome: "",
+        descricao: "",
+        quantidade: "",
+      },
+      isLoading: false,
+      isAdded: false,
+    };
   },
   methods: {
-    // Função para carregar os recursos
-    async loadRecursos() {
-      try {
-        const response = await fetch("http://localhost:8080/api/recursos");
-        const recursos = await response.json();
-        this.recursoAdicionalData.recursos = recursos;
-      } catch (error) {
-        this.showError("Erro ao carregar os recursos.");
-      }
-    },
-
-    // Função para carregar os recursos adicionais
-    async loadRecursosAdicionais() {
-      try {
-        const response = await fetch("http://localhost:8080/api/recurso-adicional");
-        const recursosAdicionais = await response.json();
-        this.recursoAdicionalData.recursosAdicionais = recursosAdicionais;
-      } catch (error) {
-        this.showError("Erro ao carregar os recursos adicionais.");
-      }
-    },
-
-    validateNome() {
-      const nome = this.recursoAdicionalData.nome;
-      if (nome.length < 3) {
-        this.errors.nome = "O nome deve ter pelo menos 3 caracteres.";
-      } else if (nome.length > 50) {
-        this.errors.nome = "O nome deve ter no máximo 50 caracteres.";
-      } else {
-        this.errors.nome = "";
-      }
-    },
-
-    validateDescricao() {
-      const descricao = this.recursoAdicionalData.descricao;
-      if (descricao.length < 10) {
-        this.errors.descricao =
-          "A descrição deve ter pelo menos 10 caracteres.";
-      } else if (descricao.length > 200) {
-        this.errors.descricao =
-          "A descrição deve ter no máximo 200 caracteres.";
-      } else {
-        this.errors.descricao = "";
-      }
-    },
-
     async submitRecursoAdicional() {
       this.validateNome();
       this.validateDescricao();
+      this.validateQuantidade();
 
       if (this.hasErrors) {
         this.showError("Por favor, corrija os erros antes de enviar.");
         return;
       }
 
+      const recursoAdicionalDTO = {
+        nome: this.recursoAdicionalData.nome,
+        descricao: this.recursoAdicionalData.descricao,
+        quantidade: this.recursoAdicionalData.quantidade,
+      };
+
+      this.isLoading = true;
+
       try {
-        const recursoAdicionalDTO = {
-          nome: this.recursoAdicionalData.nome,
-          descricao: this.recursoAdicionalData.descricao,
-          recurso: { id: this.recursoAdicionalData.recurso_id },
-        };
+        await this.$store.dispatch('addRecursoAdicional', recursoAdicionalDTO);
 
-        const response = await fetch(
-          "http://localhost:8080/api/recurso-adicional",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(recursoAdicionalDTO),
-          }
-        );
-
-        await this.handleResponse(response);
-      } catch (error) {
-        this.showError(error.message);
-      }
-    },
-
-    async handleResponse(response) {
-      const responseText = await response.text();
-
-      if (response.ok) {
-        this.message = "Recurso adicional adicionado com sucesso!";
-        this.messageType = "success";
         this.resetForm();
-
-        // Recarregar os recursos adicionais
-        this.loadRecursosAdicionais();
+        this.isAdded = true;
+        this.showSuccess("Recurso Adicional Adicionado com Sucesso!");
 
         setTimeout(() => {
-          this.$router.push("/"); // Redirecionar após sucesso
-        }, 2000);
-      } else {
-        try {
-          const err = JSON.parse(responseText);
-          throw new Error(
-            err.message || "Erro ao adicionar o recurso adicional"
-          );
-        } catch (error) {
-          throw new Error("Erro inesperado: " + responseText);
-        }
+          this.$store.commit("setMessage", { message: "", messageType: "" });
+        }, 3000);
+      } catch (error) {
+        this.showError("Erro ao adicionar o recurso adicional.");
+      } finally {
+        this.isLoading = false;
       }
     },
-
     resetForm() {
-      this.recursoAdicionalData = {
-        nome: "",
-        descricao: "",
-        recurso_id: null,
-      };
+      this.$store.dispatch('resetRecursoAdicionalData');
     },
-
+    showSuccess(message) {
+      this.$store.commit("setMessage", { message, messageType: "success" });
+    },
     showError(message) {
-      this.message = message;
-      this.messageType = "error";
+      this.$store.commit("setMessage", { message, messageType: "error" });
     },
-
-    toggleRecursoList() {
-      this.showResourceList = !this.showResourceList;
+    validateNome() {
+      this.errors.nome = this.recursoAdicionalData.nome ? "" : "O nome é obrigatório.";
     },
-
-    editRecurso(id) {
-      // Lógica para editar o recurso
-      console.log("Editando recurso com ID:", id);
-      // Você pode redirecionar para outra página de edição ou abrir um modal de edição
+    validateDescricao() {
+      this.errors.descricao = this.recursoAdicionalData.descricao ? "" : "A descrição é obrigatória.";
     },
-
-    async deleteRecurso(id) {
-      if (confirm("Tem certeza de que deseja excluir este recurso?")) {
-        try {
-          const response = await fetch(
-            `http://localhost:8080/api/recurso-adicional/${id}`,
-            {
-              method: "DELETE",
-            }
-          );
-
-          if (response.ok) {
-            this.message = "Recurso excluído com sucesso!";
-            this.messageType = "success";
-            this.loadRecursosAdicionais(); // Recarregar a lista de recursos após exclusão
-          } else {
-            this.showError("Erro ao excluir o recurso.");
-          }
-        } catch (error) {
-          this.showError("Erro ao excluir o recurso.");
-        }
-      }
+    validateQuantidade() {
+      this.errors.quantidade = this.recursoAdicionalData.quantidade > 0 ? "" : "A quantidade deve ser maior que zero.";
+    },
+    deleteRecurso(index) {
+      this.$store.dispatch('deleteRecursoAdicional', index);
     },
   },
 };
@@ -239,64 +139,28 @@ export default {
   margin-top: 5px;
 }
 
-button {
-  background-color: #4caf50;
-  /* Cor de fundo verde */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
+.success-message {
+  color: green;
   font-size: 1rem;
+  margin-top: 10px;
+}
+
+.added-info {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+}
+
+.added-info p {
+  margin: 5px 0;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  color: red;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin: 10px 0;
-}
-
-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-  background-color: #45a049;
-  /* Cor mais escura no hover */
-}
-
-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(72, 136, 255, 0.6);
-  /* Efeito de foco */
-}
-
-/* Estilos específicos para o botão "Ver Recursos Adicionais" */
-.view-resources-btn {
-  background-color: #007bff;
-  /* Cor azul para o botão de ver recursos */
-  margin-top: 20px;
-  /* Margem para separar do formulário */
-}
-
-.view-resources-btn:hover:not(:disabled) {
-  background-color: #0056b3;
-  /* Cor mais escura no hover */
-}
-
-.resource-list {
-  margin-top: 20px;
-}
-
-.resource-list ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.resource-list li {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.resource-list button {
   margin-left: 10px;
 }
 </style>
