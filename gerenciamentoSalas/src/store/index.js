@@ -1,12 +1,10 @@
 import { createStore } from 'vuex';
 import router from '../router';
-import recurso from './modules/recurso';
-import recursoAdicional from './modules/recursoAdicional'; // Importa o módulo recursoAdicional
+import recurso from './modules/recurso'; // Mantém o módulo recurso
 
 export default createStore({
   modules: {
-    recurso,
-    recursoAdicional, // Registra o módulo recursoAdicional
+    recurso, // Registra apenas o módulo recurso
   },
   state: {
     user: {
@@ -80,14 +78,6 @@ export default createStore({
         console.error('Erro ao excluir recurso:', error);
       }
     },
-    // Adiciona uma ação para buscar os recursos adicionais
-    async fetchRecursosAdicionais({ commit }) {
-      try {
-        await commit("recursoAdicional/fetchRecursosAdicionais");
-      } catch (error) {
-        console.error('Erro ao buscar recursos adicionais:', error);
-      }
-    },
   },
   getters: {
     filteredResources: (state, getters) => {
@@ -99,7 +89,5 @@ export default createStore({
         return matchesStatus && matchesTipoRecurso;
       });
     },
-    // Acessando os recursos adicionais diretamente do estado
-    getRecursosAdicionais: (state) => state.recursoAdicional.recursosAdicionais,
   },
 });

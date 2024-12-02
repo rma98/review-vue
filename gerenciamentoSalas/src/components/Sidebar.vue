@@ -23,11 +23,11 @@
           ><i class="fas fa-plus fa-2x"></i> Adicionar Recurso</router-link
         >
       </li>
-      <li v-if="isCoordinator">
+      <!-- <li v-if="isCoordinator">
         <router-link to="/add-recurso-adicional" @click="$emit('closeSidebar')"
           ><i class="fas fa-plus fa-2x"></i> Adicionar Recurso Adicional</router-link
         >
-      </li>
+      </li> -->
       <li id="loginMenu">
         <router-link to="/login" @click="$emit('closeSidebar')"
           ><i class="fas fa-user-circle fa-2x"></i> Login</router-link
@@ -38,11 +38,11 @@
           ><i class="fas fa-user-plus fa-2x"></i> Cadastro</router-link
         >
       </li>
-      <li v-if="isLoggedIn">
+      <!-- <li v-if="isLoggedIn">
         <router-link to="/perfil" @click="$emit('closeSidebar')"
           ><i class="fas fa-user fa-2x"></i> Perfil</router-link
         >
-      </li>
+      </li> -->
       <!-- Renderiza o botão 'Sair' apenas se o usuário estiver logado -->
       <li v-if="isLoggedIn">
         <button @click="logoutAndClose" class="logout-button">

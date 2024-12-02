@@ -6,46 +6,45 @@
         <h2>Adicionar Reserva</h2>
       </div>
 
-      <label for="data">Data:</label>
-      <input
-        type="date"
-        v-model="reservaData.data"
-        required
-        @input="validateData"
-      />
-      <small v-if="errors.data" class="error-message">{{ errors.data }}</small>
+      <!-- Data de início -->
+      <label for="dataInicio">Data Início:</label>
+      <input type="datetime-local" v-model="reservaData.dataInicio" required @input="validateDataInicio" />
+      <small v-if="errors.dataInicio" class="error-message">{{ errors.dataInicio }}</small>
 
-      <label for="hora">Hora:</label>
-      <input
-        type="time"
-        v-model="reservaData.hora"
-        required
-        @input="validateHora"
-      />
-      <small v-if="errors.hora" class="error-message">{{ errors.hora }}</small>
+      <!-- Data de fim -->
+      <label for="dataFim">Data Fim:</label>
+      <input type="datetime-local" v-model="reservaData.dataFim" required @input="validateDataFim" />
+      <small v-if="errors.dataFim" class="error-message">{{ errors.dataFim }}</small>
 
-      <!-- Dropdown para selecionar o recurso -->
-      <label for="itemId">Item:</label>
-      <select v-model="reservaData.itemId" required>
-        <option
-          v-for="item in reservaData.itens"
-          :key="item.id"
-          :value="item.id"
-        >
-          {{ item.nome }}
+      <!-- Dropdown para selecionar o usuário -->
+      <label for="usuarioId">Usuário:</label>
+      <select v-model="reservaData.usuarioId" required>
+        <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">
+          {{ usuario.nome }}
         </option>
       </select>
-      <small v-if="!reservaData.itemId" class="error-message">Por favor, selecione um item.</small>
+      <small v-if="!reservaData.usuarioId" class="error-message">Por favor, selecione um usuário.</small>
+
+      <!-- Dropdown para selecionar o recurso -->
+      <label for="recursoId">Recurso:</label>
+      <select v-model="reservaData.recursoId" required>
+        <option v-for="recurso in recursos" :key="recurso.id" :value="recurso.id">
+          {{ recurso.nome }}
+        </option>
+      </select>
+      <small v-if="!reservaData.recursoId" class="error-message">Por favor, selecione um recurso.</small>
+
+      <!-- Recurso adicional -->
+      <label for="recursoAdicional">Recurso Adicional:</label>
+      <input type="text" v-model="reservaData.recursoAdicional"
+        placeholder="Descreva um recurso adicional, se necessário" />
 
       <button type="submit" :disabled="hasErrors">
         Adicionar Reserva
       </button>
     </form>
 
-    <div
-      v-if="message"
-      :class="messageType === 'success' ? 'success-message' : 'error-message'"
-    >
+    <div v-if="message" :class="messageType === 'success' ? 'success-message' : 'error-message'">
       {{ message }}
     </div>
   </div>
@@ -53,17 +52,26 @@
 
 <script>
 export default {
+  props: {
+    itemId: {
+      type: Number,
+      required: true,
+    },
+  },
   data() {
     return {
       reservaData: {
-        data: "",
-        hora: "",
-        itemId: null, // ID do item selecionado
-        itens: [], // Lista de itens para preencher o dropdown
+        dataInicio: "",
+        dataFim: "",
+        usuarioId: null,  // ID do usuário selecionado
+        recursoId: null,  // ID do recurso selecionado
+        recursoAdicional: "", // Descrição do recurso adicional
       },
+      recursos: [],  // Lista de recursos disponíveis
+      usuarios: [],  // Lista de usuários (se necessário)
       errors: {
-        data: "",
-        hora: "",
+        dataInicio: "",
+        dataFim: "",
       },
       message: "",
       messageType: "",
@@ -75,35 +83,36 @@ export default {
     },
   },
   async created() {
-    // Obter a lista de itens disponíveis no backend
     try {
-      const response = await fetch("http://localhost:8080/api/itens"); // Alterar para a URL que retorna os itens
-      const itens = await response.json();
-      this.reservaData.itens = itens;
+      const recursosResponse = await fetch("http://localhost:8080/api/recursos");
+      this.recursos = await recursosResponse.json();
+
+      const usuariosResponse = await fetch("http://localhost:8080/api/usuarios");
+      this.usuarios = await usuariosResponse.json();
     } catch (error) {
-      this.showError("Erro ao carregar os itens.");
+      this.showError("Erro ao carregar recursos e usuários.");
     }
   },
   methods: {
-    validateData() {
-      const data = this.reservaData.data;
-      if (!data) {
-        this.errors.data = "A data é obrigatória.";
+    validateDataInicio() {
+      const dataInicio = this.reservaData.dataInicio;
+      if (!dataInicio) {
+        this.errors.dataInicio = "A data de início é obrigatória.";
       } else {
-        this.errors.data = "";
+        this.errors.dataInicio = "";
       }
     },
-    validateHora() {
-      const hora = this.reservaData.hora;
-      if (!hora) {
-        this.errors.hora = "A hora é obrigatória.";
+    validateDataFim() {
+      const dataFim = this.reservaData.dataFim;
+      if (!dataFim) {
+        this.errors.dataFim = "A data de fim é obrigatória.";
       } else {
-        this.errors.hora = "";
+        this.errors.dataFim = "";
       }
     },
     async submitReserva() {
-      this.validateData();
-      this.validateHora();
+      this.validateDataInicio();
+      this.validateDataFim();
 
       if (this.hasErrors) {
         this.showError("Por favor, corrija os erros antes de enviar.");
@@ -111,18 +120,15 @@ export default {
       }
 
       try {
-        const reservaDTO = { ...this.reservaData };
+        const reservaDTO = { ...this.reservaData, itemId: this.itemId }; // Incluindo itemId
 
-        const response = await fetch(
-          "http://localhost:8080/api/reservas",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(reservaDTO),
-          }
-        );
+        const response = await fetch("http://localhost:8080/api/reservas", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(reservaDTO),
+        });
 
         await this.handleResponse(response);
       } catch (error) {
@@ -138,6 +144,7 @@ export default {
         this.resetForm();
         setTimeout(() => {
           this.$router.push("/"); // Redirecionar após sucesso
+          this.$emit("close"); // Emitir evento para fechar o modal
         }, 2000);
       } else {
         try {
@@ -150,9 +157,11 @@ export default {
     },
     resetForm() {
       this.reservaData = {
-        data: "",
-        hora: "",
-        itemId: null, // Resetar o itemId após o envio
+        dataInicio: "",
+        dataFim: "",
+        usuarioId: null,
+        recursoId: null,
+        recursoAdicional: "",
       };
     },
     showError(message) {
