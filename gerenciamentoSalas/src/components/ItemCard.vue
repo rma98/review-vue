@@ -86,8 +86,8 @@ export default {
     cardClasses() {
       return {
         "status-disponivel": this.item.status === "DISPONIVEL",
-        "status-manutencao": this.item.status === "MANUTENCAO",
-        "status-inativa": this.item.status === "INATIVA",
+        "status-indisponivel": this.item.status === "INDISPONIVEL",
+        "status-reservado": this.item.status === "RESERVADO",
       };
     },
 
@@ -96,9 +96,9 @@ export default {
       switch (this.item.status) {
         case "DISPONIVEL":
           return "fas fa-check-circle";
-        case "MANUTENCAO":
+        case "INDISPONIVEL":
           return "fas fa-cogs";
-        case "INATIVA":
+        case "RESERVADO":
           return "fas fa-times-circle";
         default:
           return "";
@@ -171,12 +171,12 @@ export default {
   background-color: #e0f7e0;
 }
 
-.status-manutencao {
+.status-indisponivel {
   border: 2px solid orange;
   background-color: #fff3e0;
 }
 
-.status-inativa {
+.status-reservado {
   border: 2px solid red;
   background-color: #ffebee;
 }

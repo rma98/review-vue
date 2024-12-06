@@ -19,8 +19,8 @@
           <select v-model="selectedStatus" id="status" class="custom-select" @change="updateFilters">
             <option value="">Todos</option>
             <option value="DISPONIVEL">Disponível</option>
-            <option value="MANUTENCAO">Manutenção</option>
-            <option value="INATIVA">Inativa</option>
+            <option value="INDISPONIVEL">Indisponível</option>
+            <option value="RESERVADO">Reservado</option>
           </select>
         </div>
       </div>

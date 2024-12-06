@@ -1,8 +1,8 @@
 const state = {
     statusOpts: {
         DISPONIVEL: "Disponível",
-        MANUTENCAO: "Manutenção",
-        INATIVA: "Inativa",
+        INDISPONIVEL: "Indisponível",
+        RESERVADO: "Reservado",
     },
     tipoRecursoOpts: {
         SALA: "Sala",

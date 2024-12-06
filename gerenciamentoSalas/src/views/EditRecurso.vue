@@ -27,8 +27,8 @@
       <label for="editRecursoStatus">Status:</label>
       <select v-model="recurso.status" required>
         <option value="DISPONIVEL">Disponível</option>
-        <option value="MANUTENCAO">Manutenção</option>
-        <option value="INATIVA">Inativa</option>
+        <option value="INDISPONIVEL">Indisponível</option>
+        <option value="RESERVADO">Reservado</option>
       </select><br /><br />
 
       <!-- Novo campo: Localização -->
