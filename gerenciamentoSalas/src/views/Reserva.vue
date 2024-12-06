@@ -18,21 +18,21 @@
 
       <!-- Dropdown para selecionar o usuário -->
       <label for="usuarioId">Usuário:</label>
-      <select v-model="reservaData.usuarioId" required>
+      <select v-model="reservaData.usuarioId" required @change="validateUsuarioId">
         <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">
           {{ usuario.nome }}
         </option>
       </select>
-      <small v-if="!reservaData.usuarioId" class="error-message">Por favor, selecione um usuário.</small>
+      <small v-if="errors.usuarioId" class="error-message">{{ errors.usuarioId }}</small>
 
       <!-- Dropdown para selecionar o recurso -->
       <label for="recursoId">Recurso:</label>
-      <select v-model="reservaData.recursoId" required>
+      <select v-model="reservaData.recursoId" required @change="validateRecursoId">
         <option v-for="recurso in recursos" :key="recurso.id" :value="recurso.id">
           {{ recurso.nome }}
         </option>
       </select>
-      <small v-if="!reservaData.recursoId" class="error-message">Por favor, selecione um recurso.</small>
+      <small v-if="errors.recursoId" class="error-message">{{ errors.recursoId }}</small>
 
       <!-- Recurso adicional -->
       <label for="recursoAdicional">Recurso Adicional:</label>
@@ -72,6 +72,8 @@ export default {
       errors: {
         dataInicio: "",
         dataFim: "",
+        usuarioId: "",
+        recursoId: "",
       },
       message: "",
       messageType: "",
@@ -84,9 +86,11 @@ export default {
   },
   async created() {
     try {
+      // Carregar recursos
       const recursosResponse = await fetch("http://localhost:8080/api/recursos");
       this.recursos = await recursosResponse.json();
 
+      // Carregar usuários
       const usuariosResponse = await fetch("http://localhost:8080/api/usuarios");
       this.usuarios = await usuariosResponse.json();
     } catch (error) {
@@ -110,9 +114,25 @@ export default {
         this.errors.dataFim = "";
       }
     },
+    validateUsuarioId() {
+      if (!this.reservaData.usuarioId) {
+        this.errors.usuarioId = "Por favor, selecione um usuário.";
+      } else {
+        this.errors.usuarioId = "";
+      }
+    },
+    validateRecursoId() {
+      if (!this.reservaData.recursoId) {
+        this.errors.recursoId = "Por favor, selecione um recurso.";
+      } else {
+        this.errors.recursoId = "";
+      }
+    },
     async submitReserva() {
       this.validateDataInicio();
       this.validateDataFim();
+      this.validateUsuarioId();
+      this.validateRecursoId();
 
       if (this.hasErrors) {
         this.showError("Por favor, corrija os erros antes de enviar.");
@@ -120,14 +140,21 @@ export default {
       }
 
       try {
-        const reservaDTO = { ...this.reservaData, itemId: this.itemId }; // Incluindo itemId
+        const reservaDTO = {
+          dataInicio: this.reservaData.dataInicio,
+          dataFim: this.reservaData.dataFim,
+          usuarioId: this.reservaData.usuarioId,
+          recursoId: this.reservaData.recursoId,
+          recursoAdicional: this.reservaData.recursoAdicional,
+        };
 
+        // Fazendo a requisição com o DTO correto
         const response = await fetch("http://localhost:8080/api/reservas", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(reservaDTO),
+          body: JSON.stringify(reservaDTO), // Envia o ReservaDTO para o backend
         });
 
         await this.handleResponse(response);
