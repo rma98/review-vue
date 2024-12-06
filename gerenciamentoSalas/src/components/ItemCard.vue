@@ -11,7 +11,7 @@
     <p><strong>Capacidade:</strong> {{ item.capacidade }}</p>
     <p><strong>Localização:</strong> {{ item.localizacao }}</p>
 
-    <!-- Modais para ações -->
+    <!-- Ícones de ação -->
     <div class="actions">
       <i
         v-if="isLoggedIn && userRole === 'COORDENADOR'"
@@ -31,19 +31,11 @@
           (userRole === 'COORDENADOR' || userRole === 'PROFESSOR') &&
           item.status === 'DISPONIVEL'
         "
-        @click="showReservaModal = true"
+        @click="emitReservation"
         class="btn-reservar"
       >
         Reservar
       </button>
-
-      <!-- Modal de Reserva -->
-      <ModalReserva
-        v-if="showReservaModal"
-        :show="showReservaModal"
-        :itemId="item.id"
-        @close="showReservaModal = false"
-      />
 
       <!-- Modal de Exclusão -->
       <ModalExcluir
@@ -57,20 +49,15 @@
 </template>
 
 <script>
-import ModalReserva from "./ModalReserva.vue";
 import ModalExcluir from "./ModalExcluir.vue";
 import { mapState, mapActions } from "vuex";
 
 export default {
-  components: {
-    ModalReserva,
-    ModalExcluir,
-  },
+  components: { ModalExcluir },
   data() {
     return {
-      showReservaModal: false, // Controle do modal de reserva
-      showDeleteModal: false, // Controle do modal de exclusão
-      itemToDelete: {}, // Armazena o item a ser excluído
+      showDeleteModal: false,
+      itemToDelete: {},
     };
   },
   props: {
@@ -116,6 +103,10 @@ export default {
 
       // Redireciona para o componente EditRecurso.vue passando o ID do item
       this.$router.push(`/editar-recurso/${resourceType}/${id}`);
+    },
+    emitReservation() {
+      // Emite evento para o componente pai (Home.vue)
+      this.$emit("open-reservation", this.item.id);
     },
     openDeleteModal(id, nome) {
       this.itemToDelete = { id, nome }; // Salva o item a ser excluído

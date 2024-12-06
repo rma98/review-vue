@@ -16,7 +16,12 @@
       <div class="filter">
         <label for="status" class="filter-label">Filtrar por status:</label>
         <div class="select-wrapper">
-          <select v-model="selectedStatus" id="status" class="custom-select" @change="updateFilters">
+          <select
+            v-model="selectedStatus"
+            id="status"
+            class="custom-select"
+            @change="updateFilters"
+          >
             <option value="">Todos</option>
             <option value="DISPONIVEL">Disponível</option>
             <option value="INDISPONIVEL">Indisponível</option>
@@ -28,26 +33,52 @@
       <!-- Filtro para nome -->
       <div class="filter">
         <label for="name" class="filter-label">Filtrar por nome:</label>
-        <input type="text" v-model="selectedName" id="name" class="custom-input"
-          placeholder="Digite o nome do recurso" />
+        <input
+          type="text"
+          v-model="selectedName"
+          id="name"
+          class="custom-input"
+          placeholder="Digite o nome do recurso"
+        />
       </div>
 
       <!-- Filtro para localização -->
       <div class="filter">
-        <label for="location" class="filter-label">Filtrar por localização:</label>
-        <input type="text" v-model="selectedLocation" id="location" class="custom-input"
-          placeholder="Digite a localização" />
+        <label for="location" class="filter-label"
+          >Filtrar por localização:</label
+        >
+        <input
+          type="text"
+          v-model="selectedLocation"
+          id="location"
+          class="custom-input"
+          placeholder="Digite a localização"
+        />
       </div>
 
       <!-- Exibição dos cards de salas e laboratórios -->
       <div class="card-carousel">
         <div v-if="filteredItems.length" class="carousel-container">
-          <ItemCard v-for="item in filteredItems" :key="item.id" :item="item" :type="item.tipo_recurso"
-            @itemDeleted="handleItemDeleted" />
+          <!-- Renderização dos ItemCard -->
+          <ItemCard
+            v-for="item in filteredItems"
+            :key="item.id"
+            :item="item"
+            :isLoggedIn="isLoggedIn"
+            :userRole="userRole"
+            @open-reservation="openModalReserva"
+          />
         </div>
         <div v-else>
           <p>Nenhum recurso encontrado.</p>
         </div>
+        <!-- Exibe modal de reserva quando necessário -->
+        <ModalReserva
+          v-if="isModalOpen"
+          :show="isModalOpen"
+          :itemId="selectedItemId"
+          @close="closeModalReserva"
+        />
       </div>
     </main>
   </div>
@@ -55,17 +86,21 @@
 
 <script>
 import ItemCard from "../components/ItemCard.vue";
+import ModalReserva from "../components/ModalReserva.vue";
 import { mapState } from "vuex";
 
 export default {
   components: {
     ItemCard,
+    ModalReserva,
   },
   data() {
     return {
       selectedStatus: "", // Status selecionado pelo usuário para filtrar
       selectedName: "", // Nome selecionado pelo usuário para filtrar
       selectedLocation: "", // Localização selecionada pelo usuário para filtrar
+      isModalOpen: false, // Controla se o modal está visível
+      selectedItemId: null, // ID do item selecionado para a reserva
     };
   },
   computed: {
@@ -80,17 +115,29 @@ export default {
 
       // Filtra pelo status
       if (this.selectedStatus) {
-        filtered = filtered.filter((item) => item.status && item.status === this.selectedStatus);
+        filtered = filtered.filter(
+          (item) => item.status && item.status === this.selectedStatus
+        );
       }
 
       // Filtra pelo nome
       if (this.selectedName) {
-        filtered = filtered.filter((item) => item.nome && item.nome.toLowerCase().includes(this.selectedName.toLowerCase()));
+        filtered = filtered.filter(
+          (item) =>
+            item.nome &&
+            item.nome.toLowerCase().includes(this.selectedName.toLowerCase())
+        );
       }
 
       // Filtra pela localização
       if (this.selectedLocation) {
-        filtered = filtered.filter((item) => item.localizacao && item.localizacao.toLowerCase().includes(this.selectedLocation.toLowerCase()));
+        filtered = filtered.filter(
+          (item) =>
+            item.localizacao &&
+            item.localizacao
+              .toLowerCase()
+              .includes(this.selectedLocation.toLowerCase())
+        );
       }
 
       return filtered;
@@ -107,25 +154,35 @@ export default {
           throw new Error("Erro ao carregar os recursos");
         }
         const data = await response.json();
-        this.$store.commit('setResources', data); // Usando Vuex para atualizar os recursos
+        this.$store.commit("setResources", data); // Usando Vuex para atualizar os recursos
       } catch (error) {
         console.error(error);
       }
     },
+    openModalReserva(itemId) {
+      this.selectedItemId = itemId;
+      this.isModalOpen = true;
+    },
+    closeModalReserva() {
+      this.isModalOpen = false;
+      this.selectedItemId = null;
+    },
     handleItemDeleted(id) {
-      const confirmDeletion = confirm("Tem certeza que deseja excluir este recurso?");
+      const confirmDeletion = confirm(
+        "Tem certeza que deseja excluir este recurso?"
+      );
       if (confirmDeletion) {
-        this.$store.dispatch('deleteResource', id);
+        this.$store.dispatch("deleteResource", id);
       }
     },
     updateFilters() {
       // Atualiza os filtros no Vuex
-      this.$store.dispatch('setFilters', {
+      this.$store.dispatch("setFilters", {
         status: this.selectedStatus,
         name: this.selectedName,
-        location: this.selectedLocation
+        location: this.selectedLocation,
       });
-    }
+    },
   },
 };
 </script>
