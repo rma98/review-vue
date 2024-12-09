@@ -79,7 +79,7 @@ export default {
       if (!senha) {
         this.errors.senha = "A senha é obrigatória.";
       } else if (senha.length < 8) {
-        this.errors.senha = "A senha deve ter no mínimo 8 caracteres.";
+        this.errors.senha = "A senha deve conter pelo menos uma letra, um número e um caractere especial.";
       } else if (!/[A-Za-z]/.test(senha) || !/\d/.test(senha)) {
         this.errors.senha =
           "A senha deve conter pelo menos uma letra, um número e um caractere especial.";
