@@ -3,7 +3,6 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 
-import './assets/styles/formStyles.css';
 import './assets/styles/global.css';
 import './assets/styles/tableStyles.css';
 import './assets/styles/cardStyles.css';
